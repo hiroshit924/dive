@@ -49,10 +49,16 @@ function d365_experience(): string {
         return 'tour';
     }
     $requested = get_query_var('d365_experience');
-    return in_array($requested, ['trial', 'tour'], true) ? $requested : '';
+    return in_array($requested, ['trial', 'tour', 'overseas'], true) ? $requested : '';
 }
 
 function d365_experience_url(string $type, bool $english): string {
+    if ($type === 'overseas') {
+        if (get_option('permalink_structure')) {
+            return home_url(($english ? '/en' : '') . '/dive-trips/overseas/');
+        }
+        return add_query_arg('d365_experience', $type, d365_home($english));
+    }
     if ($english && get_option('permalink_structure')) {
         return home_url($type === 'trial' ? '/en/discover-scuba/' : '/en/dive-trips/');
     }
@@ -64,6 +70,7 @@ function d365_experience_url(string $type, bool $english): string {
 }
 
 require get_theme_file_path('tour-destinations.php');
+require get_theme_file_path('overseas-destinations.php');
 
 function d365_tour_area(): string {
     $area = get_query_var('d365_tour_area');
@@ -90,6 +97,13 @@ function d365_tour_booking_url(string $destination = ''): string {
 
 add_filter('d365_booking_notes_default', static function (string $notes): string {
     $destination = d365_input($_GET, 'dive_destination');
+    if ($destination === 'overseas') {
+        return d365_text('海外ツアーについて相談したい', 'I am interested in an overseas dive trip');
+    }
+    $overseas = d365_overseas_destinations()[$destination] ?? null;
+    if ($overseas) {
+        return d365_text('海外ツアーの希望先：', 'Preferred overseas destination: ') . d365_text(...$overseas['name']);
+    }
     foreach (d365_tour_destinations() as $id => $area) {
         $place = $destination === $id ? $area : ($area['spots'][$destination] ?? null);
         if ($place) {
@@ -116,6 +130,7 @@ add_filter('template_include', static function (string $template): string {
     }
     return match (d365_experience()) {
         'tour' => get_theme_file_path('tour.php'),
+        'overseas' => get_theme_file_path('overseas.php'),
         'trial' => get_theme_file_path('experiences.php'),
         default => $template,
     };
@@ -147,6 +162,7 @@ add_filter('pre_get_document_title', static function (string $title): string {
     }
     $titles = [
         'trial' => d365_text('横浜から体験ダイビング｜Dive 365', 'Discover Scuba Diving from Yokohama | Dive 365'),
+        'overseas' => d365_text('海外ダイビングツアー｜パラオ・プーケット・サイパン・バリ｜Dive 365', 'Overseas Dive Trips to Palau, Phuket, Saipan & Bali | Dive 365'),
         'tour' => d365_text('三浦・逗子・葉山・伊豆のダイビングツアー｜Dive 365', 'Miura, Zushi, Hayama & Izu Dive Trips | Dive 365'),
     ];
     if (isset($titles[d365_experience()])) {

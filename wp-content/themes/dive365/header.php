@@ -18,6 +18,7 @@ $root = d365_home(d365_is_english());
         </a>
         <nav aria-label="<?= esc_attr(d365_text('メインメニュー', 'Main menu')) ?>">
             <a href="<?= esc_url($root . '#services') ?>"><?php d365_label('ダイビングメニュー', 'Diving'); ?></a>
+            <?php if (function_exists('d365_show_booking')): ?><a href="<?= esc_url(d365_experience_url('tour', d365_is_english())) ?>"><?php d365_label('ツアー', 'Trips'); ?></a><?php endif; ?>
             <?php if (function_exists('d365_show_booking')): ?><a href="<?= esc_url(d365_courses_url(d365_is_english())) ?>"><?php d365_label('講習・スキルアップ', 'PADI courses'); ?></a><a href="<?= esc_url($root . '#calendar') ?>"><?php d365_label('カレンダー', 'Calendar'); ?></a><?php endif; ?>
             <a href="<?= esc_url(d365_archive_url('diving_blog')) ?>"><?php d365_label('ブログ', 'Blog'); ?></a>
             <a href="<?= esc_url($root . '#access') ?>"><?php d365_label('アクセス', 'Access'); ?></a>

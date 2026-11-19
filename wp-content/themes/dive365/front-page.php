@@ -55,6 +55,9 @@ $news = get_posts(['post_type' => 'news', 'numberposts' => 4]);
                     </article>
                 <?php endforeach; ?>
             </div>
+            <?php if (function_exists('d365_show_booking')): ?>
+                <a class="text-link" href="<?= esc_url(d365_experience_url('overseas', d365_is_english())) ?>"><?php d365_label('海外ダイビングツアー', 'Overseas dive trips'); ?> <span aria-hidden="true">↗</span></a>
+            <?php endif; ?>
         </div>
     </section>
     <?php if (function_exists('d365_show_booking')) { d365_show_booking(); } ?>

@@ -25,7 +25,7 @@ $tour_url = d365_experience_url('tour', $english);
                     <p class="tour-intro"><?php d365_label('近場の海で小さな生き物を探したり、伊豆で魚の群れに出会ったり。次に潜ってみたい海を、ここから見つけよう。', 'Look for tiny marine life close to home or find yourself surrounded by fish in Izu. Your next favorite dive starts here.'); ?></p>
                     <div class="tour-actions">
                         <a class="button" href="#tour-map"><?php d365_label('地図で行き先を探す', 'Explore the map'); ?> <span aria-hidden="true">↓</span></a>
-                        <a class="text-link" href="<?= esc_url(d365_tour_booking_url()) ?>"><?php d365_label('日程を相談する', 'Request a date'); ?> <span aria-hidden="true">↗</span></a>
+                        <a class="text-link" href="<?= esc_url(d365_experience_url('overseas', $english)) ?>"><?php d365_label('海外ツアーを見る', 'Explore overseas trips'); ?> <span aria-hidden="true">↗</span></a>
                     </div>
                 <?php endif; ?>
             </div>

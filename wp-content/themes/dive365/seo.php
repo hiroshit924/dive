@@ -20,6 +20,8 @@ add_action('wp_head', static function (): void {
     $experience = d365_experience();
     if ($experience === 'trial') {
         $description = d365_text('横浜のDive 365で初めての体験ダイビング。料金、参加条件、持ち物を確認し、開催日程や希望日からお申し込みください。', 'Try scuba diving with Dive 365 in Yokohama. See what is included, check participation requirements and request a date.');
+    } elseif ($experience === 'overseas') {
+        $description = d365_text('横浜のDive 365が不定期で開催する海外ダイビングツアー。パラオ、プーケット、サイパン、バリのダイビングポイントと開催相談をご案内します。', 'Explore dive sites in Palau, Phuket, Saipan and Bali. Dive 365 runs occasional overseas dive trips and takes inquiries from Yokohama.');
     } elseif ($experience === 'tour') {
         $description = d365_text('横浜のDive 365が案内する逗子・葉山・伊豆のファンダイブ。ツアー料金、器材レンタル、日程と予約をご案内します。', 'Join Dive 365 in Yokohama for guided dives in Zushi, Hayama and Izu. See trip prices, rental options and booking information.');
     }
@@ -29,7 +31,8 @@ add_action('wp_head', static function (): void {
         $description = d365_text(...$area['description']);
     }
     $url = d365_landing_url($english);
-    $image = d365_asset($area['photo'] ?? ($experience ? $experience . '.jpg' : ($course ? 'course.jpg' : 'hero.jpg')));
+    $images = ['trial' => 'trial.jpg', 'tour' => 'tour.jpg', 'overseas' => 'overseas-palau.webp'];
+    $image = d365_asset($area['photo'] ?? ($images[$experience] ?? ($course ? 'course.jpg' : 'hero.jpg')));
     $schema = [
         '@context' => 'https://schema.org',
         '@type' => 'SportsActivityLocation',
@@ -96,6 +99,8 @@ add_action('init', static function (): void {
                     $urls[] = d365_experience_url($type, false);
                 }
             }
+            $urls[] = d365_experience_url('overseas', false);
+            $urls[] = d365_experience_url('overseas', true);
             foreach (array_keys(d365_tour_destinations()) as $area) {
                 $urls[] = d365_tour_area_url($area, false);
                 $urls[] = d365_tour_area_url($area, true);

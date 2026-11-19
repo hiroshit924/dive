@@ -1,7 +1,7 @@
 /*
 Theme Name: Dive 365
 Description: Bilingual diving shop theme for Dive 365, Yokohama.
-Version: 1.1.0
+Version: 1.2.0
 Requires PHP: 8.1
 Text Domain: dive365
 */
@@ -217,3 +217,14 @@ details p{padding-top:.65rem}
 .tour-cta p{margin-top:.7rem;color:#deefea}
 @media(max-width:850px){.tour-banner-inner,.tour-map-grid{grid-template-columns:1fr}.tour-banner-photo img{aspect-ratio:1.6}}
 @media(max-width:595px){.tour-region-grid,.tour-spot-grid{grid-template-columns:1fr}.tour-pin{width:1.7rem;height:1.7rem;font-size:.7rem}}
+
+.overseas-banner{background:#dff3ee}
+.overseas-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(1.15rem,3vw,2.3rem);margin-top:1.6rem}
+.overseas-card.is-featured{border-top:4px solid #33a78e}
+.overseas-card.is-featured img{aspect-ratio:1.62}
+.overseas-card.is-featured h3{font-size:clamp(1.9rem,4vw,3.35rem)}
+.overseas-card dl{margin-block:1rem 0}
+.overseas-card dt{border-top:1px solid var(--line);margin-top:.85rem;padding-top:.65rem;font-weight:850;color:#126358}
+.overseas-card dd{margin:.25rem 0 0;color:var(--muted)}
+.overseas-credits{margin-top:.75rem;font-size:.86rem}
+@media(max-width:595px){.overseas-grid{grid-template-columns:1fr}}
