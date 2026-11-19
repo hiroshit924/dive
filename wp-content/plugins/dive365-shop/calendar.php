@@ -177,9 +177,14 @@ if ($result === '' && $requested_session !== '' && !$chosen_session) {
                     $service = d365_services()[get_post_meta($session->ID, '_d365_service', true)] ?? '';
                     ?>
                     <article class="session-item" id="dive-session-<?= esc_attr((string) $session->ID) ?>">
-                        <div><span><?= esc_html($format_period($start, $end)) ?></span>
-                        <strong><?= esc_html(d365_session_title($session)) ?></strong>
-                        <small><?= esc_html($service) ?></small></div>
+                        <div class="session-item-main">
+                            <img class="session-item-icon" src="<?= esc_url(d365_session_icon_url(d365_session_icon($session->ID))) ?>" width="42" height="42" alt="">
+                            <div>
+                                <span><?= esc_html($format_period($start, $end)) ?></span>
+                                <strong><?= esc_html(d365_session_title($session)) ?></strong>
+                                <small><?= esc_html($service) ?></small>
+                            </div>
+                        </div>
                         <?php if ($open): ?>
                             <a href="<?= esc_url($session_link($session->ID)) ?>"><?= esc_html(d365_text('参加をリクエスト', 'Request a spot')) ?></a>
                         <?php else: ?><span><?= esc_html($status($open, $end)) ?></span><?php endif; ?>

@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Dive 365 Shop
  * Description: Bilingual calendar, booking requests and emails, and legacy post type support.
- * Version: 1.7.0
+ * Version: 1.8.0
  * Requires PHP: 8.1
  */
 
@@ -176,6 +176,36 @@ function d365_open_booking_session(string $value): ?WP_Post {
     return $event && d365_session_open($event) ? $event : null;
 }
 
+function d365_session_icons(): array {
+    return [
+        'mask' => 'ダイビングマスク',
+        'island' => '南の島',
+        'beach' => 'ビーチ',
+        'boat' => 'ボート',
+        'waves' => '波',
+        'fish' => '熱帯魚',
+        'turtle' => 'ウミガメ',
+        'coral' => 'サンゴ',
+        'shark' => 'サメ',
+        'compass' => 'コンパス',
+    ];
+}
+
+function d365_session_icon(int $id): string {
+    $icon = (string) get_post_meta($id, '_d365_session_icon', true);
+    return isset(d365_session_icons()[$icon]) ? $icon : 'mask';
+}
+
+function d365_session_icon_url(string $icon): string {
+    return plugins_url('assets/session-icons/' . $icon . '.png', __FILE__);
+}
+
+add_action('admin_enqueue_scripts', static function (string $page): void {
+    if (in_array($page, ['post.php', 'post-new.php'], true) && get_current_screen()?->post_type === 'd365_session') {
+        wp_enqueue_style('d365-session-icons', plugins_url('assets/session-icons-admin.css', __FILE__), [], '1.8.0');
+    }
+});
+
 add_action('add_meta_boxes', static function (): void {
     add_meta_box('d365_session', '開催日程の設定', 'd365_session_box', 'd365_session');
     add_meta_box('d365_booking', '予約申請の詳細', 'd365_booking_box', 'd365_booking');
@@ -188,6 +218,7 @@ function d365_session_box(WP_Post $post): void {
     $english = get_post_meta($post->ID, '_d365_en', true);
     $availability = get_post_meta($post->ID, '_d365_availability', true);
     $service = get_post_meta($post->ID, '_d365_service', true);
+    $icon = d365_session_icon($post->ID);
     ?>
     <p><label for="d365_date">開始日（日本時間）</label><br><input type="date" id="d365_date" name="d365_date" value="<?= esc_attr($date) ?>"></p>
     <p><label for="d365_end_date">終了日（日本時間・任意）</label><br><input type="date" id="d365_end_date" name="d365_end_date" value="<?= esc_attr($end_date) ?>" aria-describedby="d365_end_date_help"></p>
@@ -202,6 +233,19 @@ function d365_session_box(WP_Post $post): void {
         <option value="closed" <?php selected($availability !== 'open'); ?>>受付終了</option>
         <option value="open" <?php selected($availability, 'open'); ?>>受付中</option>
     </select></p>
+    <fieldset class="d365-session-icons" aria-describedby="d365_session_icon_help">
+        <legend>日程一覧のアイコン</legend>
+        <p class="description" id="d365_session_icon_help">開催日程一覧で、ツアー名の左に表示されます。</p>
+        <div class="d365-session-icon-options">
+            <?php foreach (d365_session_icons() as $key => $label): ?>
+                <label>
+                    <input type="radio" name="d365_session_icon" value="<?= esc_attr($key) ?>" <?php checked($icon, $key); ?>>
+                    <img src="<?= esc_url(d365_session_icon_url($key)) ?>" width="28" height="28" alt="">
+                    <span><?= esc_html($label) ?></span>
+                </label>
+            <?php endforeach; ?>
+        </div>
+    </fieldset>
     <?php
 }
 
@@ -226,6 +270,10 @@ add_action('save_post_d365_session', static function (int $id, WP_Post $post): v
     update_post_meta($id, '_d365_en', sanitize_text_field(d365_input($_POST, 'd365_en')));
     update_post_meta($id, '_d365_service', array_key_exists($service, d365_services()) ? $service : 'trial');
     update_post_meta($id, '_d365_availability', d365_input($_POST, 'd365_availability') === 'open' ? 'open' : 'closed');
+    $icon = d365_input($_POST, 'd365_session_icon');
+    if (isset(d365_session_icons()[$icon])) {
+        update_post_meta($id, '_d365_session_icon', $icon);
+    }
 }, 10, 2);
 
 add_action('admin_notices', static function (): void {
