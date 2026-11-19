@@ -2,13 +2,13 @@
 defined('ABSPATH') || exit;
 
 add_action('wp', static function (): void {
-    if (is_front_page() || d365_is_courses() || d365_experience()) {
+    if (is_front_page() || d365_is_michael() || d365_is_courses() || d365_experience()) {
         remove_action('wp_head', 'rel_canonical');
     }
 });
 
 add_action('wp_head', static function (): void {
-    if (!is_front_page() && !d365_is_courses() && !d365_experience()) {
+    if (!is_front_page() && !d365_is_michael() && !d365_is_courses() && !d365_experience()) {
         return;
     }
 
@@ -30,9 +30,15 @@ add_action('wp_head', static function (): void {
     if ($area) {
         $description = d365_text(...$area['description']);
     }
+    if (d365_is_michael()) {
+        $description = d365_text('Diving Shop C365のキャラクター、マイケル君。カシミヤヤギにあこがれる、チャレンジが大好きなヤギの初めてのスキューバダイビングのお話。', 'Meet Michael, the Diving Shop C365 mascot. He’s a curious goat who looks up to cashmere goats and takes on a new challenge: his first scuba dive.');
+    }
     $url = d365_landing_url($english);
     $images = ['trial' => 'trial.jpg', 'tour' => 'tour.jpg', 'overseas' => 'overseas-palau.webp'];
     $image = d365_asset($area['photo'] ?? ($images[$experience] ?? ($course ? 'course.jpg' : 'hero.jpg')));
+    if (d365_is_michael()) {
+        $image = d365_asset('michael-diver.webp');
+    }
     $schema = [
         '@context' => 'https://schema.org',
         '@type' => 'SportsActivityLocation',
@@ -98,6 +104,8 @@ add_action('init', static function (): void {
                     $urls[] = d365_experience_url($type, false);
                 }
             }
+            $urls[] = d365_michael_url(false);
+            $urls[] = d365_michael_url(true);
             $urls[] = d365_experience_url('overseas', false);
             $urls[] = d365_experience_url('overseas', true);
             foreach (array_keys(d365_tour_destinations()) as $area) {

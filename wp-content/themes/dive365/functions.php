@@ -113,7 +113,21 @@ add_filter('d365_booking_notes_default', static function (string $notes): string
     return $notes;
 });
 
+function d365_is_michael(): bool {
+    return get_query_var('d365_michael') === '1';
+}
+
+function d365_michael_url(bool $english): string {
+    if (get_option('permalink_structure')) {
+        return home_url(($english ? '/en' : '') . '/michael/');
+    }
+    return add_query_arg('d365_michael', '1', d365_home($english));
+}
+
 function d365_landing_url(bool $english): string {
+    if (d365_is_michael()) {
+        return d365_michael_url($english);
+    }
     if ($area = d365_tour_area()) {
         return d365_tour_area_url($area, $english);
     }
@@ -125,6 +139,9 @@ function d365_landing_url(bool $english): string {
 }
 
 add_filter('template_include', static function (string $template): string {
+    if (d365_is_michael()) {
+        return get_theme_file_path('michael.php');
+    }
     if (d365_is_courses()) {
         return get_theme_file_path('courses.php');
     }
@@ -153,6 +170,9 @@ add_filter('language_attributes', static function (string $attributes): string {
     return d365_is_english() ? 'lang="en"' : 'lang="ja"';
 });
 add_filter('pre_get_document_title', static function (string $title): string {
+    if (d365_is_michael()) {
+        return d365_text('マイケル君の紹介｜Diving Shop C365', 'Meet Michael | Diving Shop C365');
+    }
     if (d365_is_courses()) {
         return d365_text('PADI講習・スキルアップ｜Diving Shop C365', 'PADI Courses & Skills | Diving Shop C365');
     }
@@ -171,7 +191,7 @@ add_filter('pre_get_document_title', static function (string $title): string {
     return is_front_page() ? d365_text('Diving Shop C365｜横浜のダイビングショップ', 'Diving Shop C365 | Scuba Diving in Yokohama') : $title;
 });
 add_action('wp_head', static function (): void {
-    if ((is_front_page() || d365_is_courses() || d365_experience()) && function_exists('d365_show_booking')) {
+    if ((is_front_page() || d365_is_michael() || d365_is_courses() || d365_experience()) && function_exists('d365_show_booking')) {
         foreach (['ja' => d365_landing_url(false), 'en' => d365_landing_url(true), 'x-default' => d365_landing_url(false)] as $lang => $url) {
             printf('<link rel="alternate" hreflang="%s" href="%s">' . "\n", esc_attr($lang), esc_url($url));
         }

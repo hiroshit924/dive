@@ -1,7 +1,7 @@
 /*
 Theme Name: Diving Shop C365
 Description: Bilingual diving shop theme for Diving Shop C365, Yokohama.
-Version: 1.3.0
+Version: 1.4.0
 Requires PHP: 8.1
 Text Domain: dive365
 */
@@ -132,6 +132,7 @@ details p{padding-top:.65rem}
 .access address{font-style:normal}
 .site-footer{background:#e8f5ff;color:var(--ink);padding-block:2rem}
 .site-footer a{margin-right:1rem}
+.footer-brand img{width:3.05rem;height:3.25rem}
 .reading{max-width:66rem}
 .reading h1{font-size:clamp(2rem,5vw,4rem)}
 .reading article{margin-block:1.4rem 2.7rem}
@@ -252,3 +253,23 @@ details p{padding-top:.65rem}
 .overseas-card dd{margin:.25rem 0 0;color:var(--muted)}
 .overseas-credits{margin-top:.75rem;font-size:.86rem}
 @media(max-width:595px){.overseas-grid{grid-template-columns:1fr}}
+
+.hero-michael figcaption a{pointer-events:auto;text-decoration:none}
+.hero-michael figcaption a:hover{text-decoration:underline}
+.michael-banner{background:radial-gradient(ellipse at 75% 44%,#d3efff,transparent 57%),var(--mist)}
+.michael-banner h1{font-family:"Zen Maru Gothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif}
+.michael-subtitle{font-size:clamp(1.22rem,3vw,2.15rem);font-weight:850;color:var(--sea);line-height:1.45;margin-top:.9rem}
+.michael-portrait{position:relative;isolation:isolate;justify-self:center;width:min(100%,24rem);margin:0;padding:1.1rem 1rem}
+.michael-portrait::before{content:"";position:absolute;z-index:-1;inset:12% -3%;border:2px solid #fff;border-radius:50%;background:#dbf1fd;transform:rotate(-10deg)}
+.michael-portrait img{width:100%;height:auto;filter:drop-shadow(0 .5rem .8rem #18405b22)}
+.michael-story-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.25rem;padding:0;list-style:none;margin:1.65rem 0 0}
+.michael-story-grid li{padding:clamp(1.15rem,2.5vw,2rem);border:1px solid var(--line);border-radius:var(--radius);background:#f6fbff}
+.michael-story-grid li:nth-child(2){background:#faf7ff}
+.michael-story-grid li:nth-child(3){background:#f3fbfb}
+.michael-story-grid img{width:4.8rem;height:4.8rem;object-fit:contain;margin-bottom:1rem}
+.michael-story-grid p{color:var(--muted);margin-top:.75rem}
+.michael-end{background:var(--mist);padding-block:clamp(2.5rem,6vw,4rem)}
+.michael-end .wrap{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1.2rem}
+.michael-end h2{font-size:clamp(1.85rem,4vw,3rem)}
+.michael-end p{color:var(--muted);margin-top:.65rem}
+@media(max-width:760px){.michael-story-grid{grid-template-columns:1fr}.michael-portrait{width:min(78%,20rem)}}

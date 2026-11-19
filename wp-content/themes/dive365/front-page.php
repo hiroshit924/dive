@@ -43,8 +43,14 @@ $news = get_posts(['post_type' => 'news', 'numberposts' => 4]);
                     <button type="button" hidden class="motion-toggle" data-play="<?= esc_attr(d365_text('動画を再生', 'Play video')) ?>" data-pause="<?= esc_attr(d365_text('動画を停止', 'Pause video')) ?>" aria-label="<?= esc_attr(d365_text('動画を再生', 'Play video')) ?>">▶</button>
                 </div>
                 <figure class="hero-michael">
-                    <img src="<?= esc_url(d365_asset('michael-diver.webp')) ?>" alt="<?= esc_attr(d365_text('C365ロゴのワッペンを胸につけたダイビング姿のマイケル', 'Michael in scuba gear with a C365 patch on his chest')); ?>" width="720" height="813" decoding="async">
-                    <figcaption><?php d365_label('案内役のマイケル', 'Meet Michael'); ?></figcaption>
+                    <img src="<?= esc_url(d365_asset('michael-diver.webp')) ?>" alt="<?= esc_attr(d365_text('ダイビング姿で手を振るマイケル君', 'Michael waves in his scuba gear')); ?>" width="720" height="807" decoding="async">
+                    <figcaption>
+                        <?php if (function_exists('d365_show_booking')): ?>
+                            <a href="<?= esc_url(d365_michael_url(d365_is_english())) ?>"><?php d365_label('マイケル君の紹介', 'Meet Michael'); ?> <span aria-hidden="true">↗</span></a>
+                        <?php else: ?>
+                            <?php d365_label('マイケル君', 'Michael'); ?>
+                        <?php endif; ?>
+                    </figcaption>
                 </figure>
             </div>
         </div>
