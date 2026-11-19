@@ -10,7 +10,10 @@ trap 'rm -f -- "$wp_cli"' EXIT
 curl -fsSL https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar -o "$wp_cli"
 docker compose cp "$wp_cli" wordpress:/tmp/wp-cli.phar
 docker compose exec -T wordpress chmod a+r /tmp/wp-cli.phar
-wp() { docker compose exec -T --user www-data wordpress php /tmp/wp-cli.phar --path=/var/www/html "$@"; }
+wp() {
+    docker compose exec -T --user www-data -e "HTTP_HOST=127.0.0.1:${DIVE365_PORT:-8080}" \
+        wordpress php /tmp/wp-cli.phar --path=/var/www/html "$@"
+}
 
 if ! wp core is-installed; then
     : "${DIVE365_ADMIN_PASSWORD:?Set a password for the local WordPress admin before first startup}"
