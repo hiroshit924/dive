@@ -2,39 +2,60 @@ const hero = document.querySelector('.hero');
 const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
 if (hero) {
-    const video = hero.querySelector('video');
-    const toggle = hero.querySelector('.motion-toggle');
+    const video = hero.querySelector('.hero-video');
+    let photoTimer;
+    let videoTimer;
+    let started = false;
+    let inView = !('IntersectionObserver' in window);
 
-    function syncVideoControl() {
-        const playing = !video.paused;
-        hero.classList.toggle('is-playing', playing);
-        toggle.textContent = playing ? 'Ⅱ' : '▶';
-        toggle.setAttribute('aria-label', playing ? toggle.dataset.pause : toggle.dataset.play);
+    function showPhoto() {
+        window.clearTimeout(videoTimer);
+        video.pause();
+        hero.classList.remove('is-playing');
     }
 
-    toggle.hidden = false;
-    syncVideoControl();
-    toggle.addEventListener('click', async () => {
-        if (!video.paused) {
-            video.pause();
+    function canAutoplay() {
+        return inView && !document.hidden && !motion.matches;
+    }
+
+    async function playVideo() {
+        if (started || !canAutoplay()) {
             return;
         }
-        if (!video.hasAttribute('src')) {
-            video.src = video.dataset.src;
-        }
+        started = true;
+        video.src = video.dataset.src;
         try {
             await video.play();
         } catch {
-            syncVideoControl();
+            return;
         }
-    });
-    video.addEventListener('playing', syncVideoControl);
-    video.addEventListener('pause', syncVideoControl);
-    motion.addEventListener('change', event => {
-        if (event.matches) {
-            video.pause();
+        if (!video.paused && canAutoplay()) {
+            hero.classList.add('is-playing');
+            videoTimer = window.setTimeout(showPhoto, 4800);
         }
-    });
+    }
+
+    function updateAutoplay() {
+        window.clearTimeout(photoTimer);
+        if (!canAutoplay()) {
+            showPhoto();
+        } else if (!started) {
+            photoTimer = window.setTimeout(playVideo, 6000);
+        }
+    }
+
+    video.addEventListener('ended', showPhoto);
+    motion.addEventListener('change', updateAutoplay);
+    document.addEventListener('visibilitychange', updateAutoplay);
+    if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver(([entry]) => {
+            inView = entry.isIntersecting;
+            updateAutoplay();
+        });
+        observer.observe(hero);
+    } else {
+        updateAutoplay();
+    }
 }
 
 const booking = document.querySelector('.d365-booking-form');

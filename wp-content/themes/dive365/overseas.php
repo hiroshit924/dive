@@ -1,13 +1,12 @@
 <?php
 get_header();
-$english = d365_is_english();
 $destinations = d365_overseas_destinations();
 ?>
 <main id="main" class="tour-page overseas-page">
+    <?php get_template_part('template-parts/tour-navigation'); ?>
     <section class="tour-banner overseas-banner">
         <div class="wrap tour-banner-inner">
             <div>
-                <a class="text-link tour-back" href="<?= esc_url(d365_experience_url('tour', $english)) ?>">← <?php d365_label('国内ツアー', 'Japan dive trips'); ?></a>
                 <p class="tour-kicker"><?php d365_label('海外ダイビングツアー・不定期開催', 'Overseas dive trips · occasional departures'); ?></p>
                 <h1><?php d365_label('次は、海を越えて。', 'Let’s go a little farther.'); ?></h1>
                 <p class="tour-intro"><?php d365_label('パラオの外洋、プーケットの島々。いつもの仲間と、まだ潜ったことのない海へ。Diving Shop C365の海外ツアーは不定期で開催しています。', 'From Palau’s open ocean to the islands off Phuket, discover a new dive with familiar faces. Diving Shop C365 runs overseas trips from time to time.'); ?></p>
@@ -47,22 +46,6 @@ $destinations = d365_overseas_destinations();
                 <?php endforeach; ?>
             </div>
             <p class="course-note"><?php d365_label('開催時期・料金・参加条件はツアーごとにご案内します。海況や経験によって、潜るポイントは変わります。', 'Dates, prices and requirements are announced for each trip. Sites depend on sea conditions and divers’ experience.'); ?></p>
-            <details class="overseas-credits">
-                <summary><?php d365_label('写真クレジット', 'Photo credits'); ?></summary>
-                <ul>
-                    <?php foreach ($destinations as $destination):
-                        [$artist, $license, $file, $license_url] = $destination['credit'];
-                        ?>
-                        <li><a href="<?= esc_url('https://commons.wikimedia.org/wiki/File:' . rawurlencode(str_replace(' ', '_', $file))) ?>"><?= esc_html(d365_text(...$destination['name'])) ?> · <?= esc_html($artist) ?></a>
-                        <?php if ($license_url): ?>
-                            (<a href="<?= esc_url($license_url) ?>"><?= esc_html($license) ?></a> · <?php d365_label('縮小・表示時にトリミング', 'resized and cropped for display'); ?>)
-                        <?php else: ?>
-                            (<?= esc_html($license) ?>)
-                        <?php endif; ?>
-                        </li>
-                    <?php endforeach; ?>
-                </ul>
-            </details>
         </div>
     </section>
     <section class="tour-cta">

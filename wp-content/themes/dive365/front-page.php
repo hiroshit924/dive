@@ -46,8 +46,7 @@ $news = get_posts(['post_type' => 'news', 'numberposts' => 4]);
             <div class="hero-art">
                 <div class="hero-media">
                     <img class="hero-image" src="<?= esc_url(d365_asset('hero.jpg')) ?>" alt="<?= esc_attr(d365_text('海に浮かんで手を振るダイビングの参加者', 'Divers wave from the water')); ?>" width="1900" height="1425" fetchpriority="high">
-                    <video class="hero-video" muted loop playsinline preload="none" aria-hidden="true" data-src="<?= esc_url(d365_asset('coast.mp4')) ?>"></video>
-                    <button type="button" hidden class="motion-toggle" data-play="<?= esc_attr(d365_text('動画を再生', 'Play video')) ?>" data-pause="<?= esc_attr(d365_text('動画を停止', 'Pause video')) ?>" aria-label="<?= esc_attr(d365_text('動画を再生', 'Play video')) ?>">▶</button>
+                    <video class="hero-video" muted playsinline preload="none" aria-hidden="true" data-src="<?= esc_url(d365_asset('coast.mp4')) ?>"></video>
                 </div>
                 <figure class="hero-michael">
                     <img src="<?= esc_url(d365_asset('michael-diver.webp')) ?>" alt="<?= esc_attr(d365_text('ダイビング姿で手を振るマイケル君', 'Michael waves in his scuba gear')); ?>" width="720" height="807" decoding="async">

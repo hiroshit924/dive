@@ -45,6 +45,31 @@ function d365_courses_url(bool $english): string {
     return add_query_arg('d365_courses', '1', d365_home($english));
 }
 
+require get_theme_file_path('training-courses.php');
+
+function d365_current_course(): string {
+    $course = get_query_var('d365_course');
+    return d365_is_courses() && is_string($course) && isset(d365_training_courses()[$course]) ? $course : '';
+}
+
+function d365_course_url(string $course, bool $english): string {
+    if (get_option('permalink_structure')) {
+        return home_url(($english ? '/en' : '') . '/courses/' . $course . '/');
+    }
+    return d365_home($english, ['d365_courses' => '1', 'd365_course' => $course]);
+}
+
+function d365_course_booking_url(string $course): string {
+    if (!function_exists('d365_show_booking')) {
+        return 'tel:+81452735496';
+    }
+    $args = ['dive_service' => 'course'];
+    if ($course !== '') {
+        $args['dive_course'] = $course;
+    }
+    return d365_home(d365_is_english(), $args) . '#booking';
+}
+
 function d365_experience(): string {
     if (is_page(47)) {
         return 'trial';
@@ -100,6 +125,10 @@ function d365_tour_booking_url(string $destination = ''): string {
 }
 
 add_filter('d365_booking_notes_default', static function (string $notes): string {
+    $course = d365_training_courses()[d365_input($_GET, 'dive_course')] ?? null;
+    if (d365_input($_GET, 'dive_service') === 'course' && $course) {
+        return d365_text('希望の講習：', 'Preferred course: ') . d365_text(...$course['name']);
+    }
     $destination = d365_input($_GET, 'dive_destination');
     if ($destination === 'overseas') {
         return d365_text('海外ツアーについて相談したい', 'I am interested in an overseas dive trip');
@@ -136,7 +165,8 @@ function d365_landing_url(bool $english): string {
         return d365_tour_area_url($area, $english);
     }
     if (d365_is_courses()) {
-        return d365_courses_url($english);
+        $course = d365_current_course();
+        return $course ? d365_course_url($course, $english) : d365_courses_url($english);
     }
     $type = d365_experience();
     return $type ? d365_experience_url($type, $english) : d365_home($english);
@@ -177,6 +207,9 @@ add_filter('pre_get_document_title', static function (string $title): string {
     if (d365_is_michael()) {
         return d365_text('マイケル君の紹介｜Diving Shop C365', 'Meet Michael | Diving Shop C365');
     }
+    if ($course = d365_current_course()) {
+        return d365_text(...d365_training_courses()[$course]['name']) . d365_text('｜Diving Shop C365', ' | Diving Shop C365');
+    }
     if (d365_is_courses()) {
         return d365_text('PADI講習・スキルアップ｜Diving Shop C365', 'PADI Courses & Skills | Diving Shop C365');
     }
@@ -201,4 +234,5 @@ add_action('wp_head', static function (): void {
         }
     }
 });
+require get_theme_file_path('blog.php');
 require get_theme_file_path('seo.php');

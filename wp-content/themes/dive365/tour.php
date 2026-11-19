@@ -7,6 +7,7 @@ $area = $destinations[$area_id] ?? null;
 $tour_url = d365_experience_url('tour', $english);
 ?>
 <main id="main" class="tour-page">
+    <?php get_template_part('template-parts/tour-navigation'); ?>
     <section class="tour-banner">
         <div class="wrap tour-banner-inner">
             <div>
@@ -25,7 +26,7 @@ $tour_url = d365_experience_url('tour', $english);
                     <p class="tour-intro"><?php d365_label('近場の海で小さな生き物を探したり、伊豆で魚の群れに出会ったり。次に潜ってみたい海を、ここから見つけよう。', 'Look for tiny marine life close to home or find yourself surrounded by fish in Izu. Your next favorite dive starts here.'); ?></p>
                     <div class="tour-actions">
                         <a class="button" href="#tour-map"><?php d365_label('地図で行き先を探す', 'Explore the map'); ?> <span aria-hidden="true">↓</span></a>
-                        <a class="text-link" href="<?= esc_url(d365_experience_url('overseas', $english)) ?>"><?php d365_label('海外ツアーを見る', 'Explore overseas trips'); ?> <span aria-hidden="true">↗</span></a>
+                        <a class="text-link" href="<?= esc_url(d365_tour_booking_url()) ?>"><?php d365_label('日程を相談する', 'Request a date'); ?> <span aria-hidden="true">↗</span></a>
                     </div>
                 <?php endif; ?>
             </div>
@@ -50,6 +51,7 @@ $tour_url = d365_experience_url('tour', $english);
                                 <h3><?= esc_html(d365_text(...$spot['name'])) ?></h3>
                                 <p class="tour-tag"><?= esc_html(d365_text(...$spot['feature'])) ?></p>
                                 <p><?= esc_html(d365_text(...$spot['description'])) ?></p>
+                                <p><?= esc_html(d365_text(...$spot['highlights'])) ?></p>
                                 <a class="text-link" href="<?= esc_url(d365_tour_booking_url($slug)) ?>"
                                    aria-label="<?= esc_attr($english ? 'Ask about diving in ' . $spot['name'][1] : $spot['name'][0] . 'のツアーを相談する') ?>">
                                     <?php d365_label('この海を相談する', 'Ask about this dive'); ?> <span aria-hidden="true">↗</span>

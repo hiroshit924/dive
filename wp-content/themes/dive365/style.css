@@ -1,7 +1,7 @@
 /*
 Theme Name: Diving Shop C365
 Description: Bilingual diving shop theme for Diving Shop C365, Yokohama.
-Version: 1.5.1
+Version: 1.6.0
 Requires PHP: 8.1
 Text Domain: dive365
 */
@@ -67,8 +67,6 @@ html[lang=en] .hero h1{font-size:clamp(2.8rem,5.3vw,5.6rem)}
 .hero-image,.hero-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:73% 63%}
 .hero-video{opacity:0;transition:opacity .45s}
 .hero.is-playing .hero-video{opacity:1}
-.motion-toggle{position:absolute;bottom:1.45rem;right:2.35rem;display:grid;place-items:center;width:2.6rem;height:2.6rem;border:1px solid #fff9;border-radius:50%;background:#12466c;color:white}
-.motion-toggle:hover{background:#093755}
 .hero-michael{position:absolute;z-index:1;left:0;bottom:0;width:clamp(6rem,10vw,9rem);margin:0;pointer-events:none}
 .hero-michael img{width:100%;height:auto;filter:drop-shadow(0 8px 10px #10375420)}
 .hero-michael figcaption{position:absolute;bottom:.15rem;left:0;border:1px solid var(--line);border-radius:100px;padding:.22rem .8rem;background:#fff;color:var(--navy);font-size:.78rem;font-weight:850;white-space:nowrap;box-shadow:var(--shadow)}
@@ -94,10 +92,15 @@ html[lang=en] .hero h1{font-size:clamp(2.8rem,5.3vw,5.6rem)}
 .text-link{display:inline-block;color:var(--sea);font-weight:750;margin-top:1rem}
 .services,.calendar,.first-dive{background:var(--mist)}
 .schedule-grid,.booking-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(1.5rem,5vw,5rem);margin-top:2rem;align-items:start}
+.calendar-schedule{position:relative;isolation:isolate;align-self:stretch;min-height:12rem}
+.calendar-schedule::before{content:"";position:absolute;inset:0 0 0 auto;width:min(78%,22rem);background:url("assets/c365-deep-diving.webp") center right / contain no-repeat;opacity:.085;z-index:-1;pointer-events:none}
 .calendar-card{background:white;padding:clamp(.75rem,3vw,1.75rem);border:1px solid var(--line);border-radius:var(--radius)}
 .month-nav{display:grid;grid-template-columns:2.5rem 1fr 2.5rem;align-items:center;text-align:center;min-height:2.65rem}
 .month-nav a,.calendar td a,.calendar td [aria-current]{display:inline-flex;align-items:center;justify-content:center;width:2.25rem;height:2.25rem;border-radius:50%;background:#eaf5fd;text-decoration:none}
-.calendar td a{background:var(--sky);font-weight:850}
+.calendar td a{font-weight:850}
+.calendar td a.calendar-day-open{background:var(--sky);color:var(--navy)}
+.calendar td a.calendar-day-closed{color:var(--muted)}
+.calendar-legend{color:var(--muted);font-size:.84rem;margin-top:.9rem}
 .calendar td [aria-current]{border:1px solid var(--line)}
 .calendar table{width:100%;table-layout:fixed;border-collapse:collapse;text-align:center;margin-top:.65rem}
 .calendar :is(th,td){height:2.75rem;border-top:1px solid var(--line);font-size:.9rem}
@@ -164,7 +167,6 @@ details p{padding-top:.65rem}
   .hero h1{font-size:clamp(2.55rem,11.25vw,4.2rem)}
   .hero-media{aspect-ratio:1.2}
   .hero-art{padding-left:2%}
-  .motion-toggle{right:1.15rem;bottom:.75rem}
   .header-book{min-height:2.5rem;padding:.5rem .7rem;font-size:.76rem;gap:.35rem}
   .calendar :is(th,td){height:2.4rem}
   .calendar td a,.calendar td [aria-current]{width:2rem;height:2rem}
@@ -251,7 +253,6 @@ details p{padding-top:.65rem}
 .overseas-card dl{margin-block:1rem 0}
 .overseas-card dt{border-top:1px solid var(--line);margin-top:.85rem;padding-top:.65rem;font-weight:850;color:#126358}
 .overseas-card dd{margin:.25rem 0 0;color:var(--muted)}
-.overseas-credits{margin-top:.75rem;font-size:.86rem}
 @media(max-width:595px){.overseas-grid{grid-template-columns:1fr}}
 
 .hero-michael figcaption a{pointer-events:auto;text-decoration:none}
@@ -277,18 +278,83 @@ details p{padding-top:.65rem}
 .hero-services{display:flex;flex-wrap:wrap;gap:.3rem 1.05rem;margin:1.2rem 0 0;padding:0;list-style:none;font-size:.86rem;font-weight:750;color:var(--navy)}
 .hero-services a:hover{color:var(--sea)}
 .michael-diary{padding-block:0 clamp(2.7rem,6vw,5rem)}
-.michael-diary-card{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,3fr);align-items:center;gap:clamp(1.25rem,4vw,3.5rem);padding:clamp(1.1rem,3vw,2.25rem);border:1px solid var(--line);border-radius:var(--radius);background:var(--mist)}
-.michael-diary-card img{width:100%;aspect-ratio:1.6;object-fit:cover;border-radius:1rem}
-.michael-diary-card h2{font-size:clamp(1.7rem,3.6vw,3rem)}
-.michael-diary-card p{color:var(--muted);margin-top:.65rem}
-.reading .michael-diary-photo{margin:1.4rem auto 2.4rem}
-.michael-diary-photo img{width:100%;height:auto;border-radius:var(--radius)}
-.michael-diary-photo figcaption{font-size:.88rem;color:var(--muted);margin-top:.5rem}
-.michael-diary-photo.diary-portrait{max-width:34rem}
-@media(max-width:640px){.michael-diary-card{grid-template-columns:1fr}}
-.reading article:has(.michael-diary-photo) > img{margin-block:1.25rem;border-radius:var(--radius)}
-.reading article:has(.michael-diary-photo) h2{font-size:clamp(1.45rem,3vw,2.25rem);letter-spacing:-.04em}
+.michael-diary-panel{padding:clamp(1rem,3vw,2.25rem);border:1px solid var(--line);border-radius:var(--radius);background:var(--mist)}
+.michael-diary-panel h2{font-size:clamp(1.75rem,3.3vw,2.8rem)}
+.michael-diary-panel>p{color:var(--muted);max-width:53rem;margin-top:.8rem}
+.michael-diary-photos{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(.75rem,2vw,1.2rem);max-width:62rem;margin-top:1.35rem}
+.michael-diary-photos figure{margin:0}
+.michael-diary-photos img{width:100%;height:auto;aspect-ratio:4/3;max-height:11rem;object-fit:contain;border-radius:.7rem;background:#e3f1fa}
+.michael-diary-photos figcaption{color:var(--muted);font-size:.82rem;line-height:1.5;margin-top:.45rem}
+@media(max-width:650px){.michael-diary-photos{grid-template-columns:repeat(2,minmax(0,1fr))}}
 
+/* Training and course pages. */
+.training-hero{padding-block:clamp(3rem,7vw,6rem);background:linear-gradient(120deg,#f8fcff,#e5f4ff)}
+.training-hero-grid,.training-detail-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:clamp(1.5rem,5vw,4.5rem)}
+.training-hero-grid{align-items:center}
+.training-hero h1{font-size:clamp(2.1rem,4.7vw,4.4rem);letter-spacing:-.065em;overflow-wrap:anywhere}
+.training-hero-grid>img{width:100%;aspect-ratio:4/3;object-fit:cover;border:4px solid white;border-radius:32% 40% 18% 22% / 28% 35% 22% 25%;box-shadow:var(--shadow)}
+.training-back{margin:0 0 1rem}
+.training-lead{margin-top:1rem;color:var(--muted);max-width:36rem;font-size:clamp(.98rem,1.4vw,1.13rem)}
+.training-section,.training-practice{padding-block:clamp(2.9rem,6.5vw,6rem)}
+.training-page h2{font-size:clamp(1.65rem,3.2vw,2.85rem)}
+.training-detail-grid{align-items:start}
+.training-practice{background:var(--mist)}
+.training-cards .course-card{box-shadow:var(--shadow)}
+.training-cards h3 a{text-decoration:none}
+.training-cards h3 a:hover{text-decoration:underline;color:var(--sea)}
+.training-availability{font-size:.87rem;font-weight:750;margin-top:.7rem;color:var(--muted)}
+.training-requirements{padding-left:1.35rem;color:var(--muted)}
+.training-requirements li+li{margin-top:.65rem}
+.training-price{background:#f5fbff}
+.training-price h2{font-size:1.35rem;letter-spacing:-.03em}
+.training-price h3{font-size:1rem;margin-top:1rem}
+.training-price h2+p,.training-price h3+p{margin-top:.6rem}
+.training-steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,15.5rem),1fr));gap:1rem;margin:1.2rem 0 0;padding:0;list-style:none;counter-reset:training-step}
+.training-steps li{counter-increment:training-step}
+.training-steps li::before{content:counter(training-step);width:2rem;height:2rem;display:grid;place-items:center;margin-bottom:.75rem;border-radius:50%;background:var(--sky);color:var(--navy);font-weight:850}
+@media(max-width:740px){.training-hero-grid,.training-detail-grid{grid-template-columns:1fr}.training-hero-grid>img{aspect-ratio:16/10}}
+
+/* Diving blog. */
+.blog-banner{background:linear-gradient(120deg,#f7fbff,#e9f6ff);padding-block:clamp(2.5rem,6vw,5.4rem)}
+.blog-banner h1{font-size:clamp(2rem,5vw,4rem);letter-spacing:-.055em;overflow-wrap:anywhere}
+.blog-banner p{margin-top:.85rem;color:var(--muted)}
+.blog-list{padding-block:clamp(2rem,4.7vw,4rem)}
+.blog-card-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(1rem,2.6vw,2rem)}
+.blog-card{overflow:hidden;border:1px solid var(--line);border-radius:var(--radius);background:white;box-shadow:var(--shadow)}
+.blog-card>a{display:block;height:100%;text-decoration:none}
+.blog-card>a:hover h2{text-decoration:underline;color:var(--sea)}
+.blog-card>a:focus-visible{outline-offset:-4px}
+.blog-card-media{display:grid;place-items:center;aspect-ratio:16/10;overflow:hidden;background:#eaf7ff}
+.blog-card-media>img{width:100%;height:100%;object-fit:cover}
+.blog-card-media>.blog-card-emblem{width:22%;height:auto;object-fit:contain}
+.blog-card-text{padding:clamp(.95rem,2.2vw,1.45rem)}
+.blog-card time,.blog-single time{display:block;color:var(--muted);font-size:.85rem;font-weight:650}
+.blog-card h2{line-height:1.4;font-size:clamp(1.12rem,1.8vw,1.48rem);letter-spacing:-.028em;margin:.4rem 0}
+.blog-card p{color:var(--muted);font-size:.93rem;line-height:1.65}
+.blog-list .nav-links{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:.5rem;margin-top:2.1rem}
+.blog-list .page-numbers{display:grid;place-items:center;min-width:2.5rem;min-height:2.5rem;padding:.4rem .65rem;border-radius:.6rem;background:var(--mist);font-weight:750;text-decoration:none}
+.blog-list .page-numbers.current{background:var(--sky);color:var(--navy)}
+.blog-reading{max-width:50rem}
+.blog-single .blog-banner{padding-block:clamp(1.8rem,5vw,4rem)}
+.blog-single .blog-banner .text-link{margin:0 0 .95rem}
+.blog-single .blog-banner h1{font-size:clamp(1.9rem,4vw,3.15rem);line-height:1.25}
+.blog-single time{margin-top:.9rem}
+.blog-article>div.blog-reading{padding-block:clamp(1.5rem,5vw,3.4rem)}
+.blog-cover{margin:0 0 1.8rem}
+.blog-cover img,.blog-content img{max-width:100%;height:auto;border-radius:.75rem}
+.blog-content{font-size:clamp(1rem,1.35vw,1.1rem);line-height:1.9;overflow-wrap:anywhere}
+.blog-content :where(h1,h2,h3,h4,h5,h6){font-size:1.3em;line-height:1.45;letter-spacing:-.025em;margin-block:1.55em .55em}
+.blog-content :where(h1,h2){font-size:1.6em}
+.blog-content :where(h4,h5,h6){font-size:1.1em}
+.blog-content :where(p,ul,ol,blockquote){margin-block:.85em}
+.blog-content :where(figure,video){max-width:100%;margin-block:1.3em}
+.blog-content figure{margin-inline:0}
+.blog-content :where(figcaption,.wp-caption-text){color:var(--muted);font-size:.875rem;line-height:1.55;margin-top:.45rem}
+.blog-content :where(iframe,embed){max-width:100%}
+.blog-content .wp-block-table{overflow-x:auto}
+.blog-article-nav{margin-top:1.35rem}
+@media(max-width:900px){.blog-card-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:570px){.blog-card-grid{grid-template-columns:1fr}}
 .footer-links{display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
 .footer-links a{margin:0}
 .instagram-link{display:inline-flex;align-items:center;gap:.5rem;font-weight:750;text-underline-offset:.22em}
@@ -299,3 +365,13 @@ details p{padding-top:.65rem}
 .instagram-icon>span::after{top:.11rem;right:.11rem;width:.12rem;height:.12rem;background:#fff}
 .access .instagram-link{margin-top:1.15rem}
 .instagram-handle{color:var(--muted);font-weight:600}
+
+.tour-navigation{background:#fff;border-bottom:1px solid var(--line);padding:.7rem 0}
+.tour-navigation-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.4rem;max-width:29rem;padding:.3rem;background:#eef7fd;border-radius:1.15rem}
+.tour-navigation-links a{display:grid;place-items:center;padding:.6rem .35rem;min-height:2.65rem;border-radius:.9rem;color:var(--navy);font-weight:800;text-align:center;text-decoration:none}
+.tour-navigation-links a[aria-current]{background:var(--sea);color:#fff}
+.tour-navigation-links a:not([aria-current]):hover{background:#dcefff}
+.tour-spot-body>p:not(.tour-location,.tour-tag){line-height:1.8}
+.staff-card>img{object-fit:contain;aspect-ratio:5/4;padding:clamp(.65rem,1.6vw,1.15rem);background:var(--mist)}
+
+@media(max-width:820px){.calendar-schedule::before{width:min(58%,12rem)}}

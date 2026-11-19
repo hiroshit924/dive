@@ -2,7 +2,6 @@
 get_header();
 $english = d365_is_english();
 $home = d365_home($english);
-$diary = get_page_by_path('michael-first-dive-diary', OBJECT, ['diving_blog']);
 $story = [
     ['calendar', '「やってみたい」が出発点', 'It started with “I want to try”',
         '新しいことを見つけると、じっとしていられないマイケル君。ある日、水面がきらきら光るのを眺めて、「この青い水の下には何があるんだろう？」。次の日には、ダイビングのことを聞きに出かけました。',
@@ -46,18 +45,7 @@ $story = [
             </ol>
         </div>
     </section>
-    <?php if ($diary && $diary->post_status === 'publish'): ?>
-        <section class="section michael-diary">
-            <div class="wrap michael-diary-card">
-                <?= get_the_post_thumbnail($diary, 'medium_large', ['loading' => 'lazy']) ?>
-                <div>
-                    <h2><?php d365_label('マイケル君の海日記', 'Michael’s dive diary'); ?></h2>
-                    <p><?php d365_label('ボートでの準備から海の中のイメージまで。写真4枚で、初めての海をマイケル君と振り返ります。', 'Follow Michael’s first adventure in four photos, from getting ready on the boat to picturing what lies underwater.'); ?></p>
-                    <a class="text-link" href="<?= esc_url(get_permalink($diary)) ?>" hreflang="ja"><?php d365_label('写真付きの体験ブログを読む', 'Read the photo diary (Japanese)'); ?> <span aria-hidden="true">↗</span></a>
-                </div>
-            </div>
-        </section>
-    <?php endif; ?>
+    <?php get_template_part('template-parts/michael-diary'); ?>
     <section class="michael-end">
         <div class="wrap">
             <div>

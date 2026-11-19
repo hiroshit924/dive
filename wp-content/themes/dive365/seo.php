@@ -15,7 +15,7 @@ add_action('wp_head', static function (): void {
     $course = d365_is_courses();
     $english = d365_is_english();
     $description = $course
-        ? d365_text('横浜のDiving Shop C365でPADIのダイビング講習。オープン・ウォーター、アドヴァンスド講習の料金・参加条件と、次のスキルアップコースをご案内します。', 'Explore PADI scuba training at Diving Shop C365 in Yokohama, including Open Water and Advanced Open Water courses, prices, requirements and skill progression.')
+        ? d365_text('横浜のDiving Shop C365でPADIのダイビング講習。初めてのCカードから、アドヴァンスド、スペシャルティ、レスキューまで。料金・参加条件・講習の流れを比較できます。', 'Explore PADI scuba training at Diving Shop C365 in Yokohama, including Open Water and Advanced Open Water courses, prices, requirements and skill progression.')
         : d365_text('横浜・桜木町のダイビングショップ Diving Shop C365。次のお休みに、逗子・葉山や伊豆の海へ。おひとりや初めての方も歓迎。体験ダイビング、PADI講習、ツアーの日程・予約をご案内します。', 'Based in Sakuragicho, Yokohama, Diving Shop C365 welcomes beginners and solo divers. Explore introductory dives, PADI courses and small-group trips to Zushi, Hayama and Izu.');
     $experience = d365_experience();
     if ($experience === 'trial') {
@@ -32,6 +32,9 @@ add_action('wp_head', static function (): void {
     }
     if (d365_is_michael()) {
         $description = d365_text('Diving Shop C365のキャラクター、マイケル君。カシミヤヤギにあこがれる、チャレンジが大好きなヤギの初めてのスキューバダイビングのお話。', 'Meet Michael, the Diving Shop C365 mascot. He’s a curious goat who looks up to cashmere goats and takes on a new challenge: his first scuba dive.');
+    }
+    if ($course_id = d365_current_course()) {
+        $description = d365_text(...d365_training_courses()[$course_id]['lead']);
     }
     $url = d365_landing_url($english);
     $images = ['trial' => 'trial.jpg', 'tour' => 'tour.jpg', 'overseas' => 'overseas-palau.webp'];
@@ -103,6 +106,10 @@ add_action('init', static function (): void {
                 if (get_post_type($id) !== 'page' || get_post_status($id) !== 'publish') {
                     $urls[] = d365_experience_url($type, false);
                 }
+            }
+            foreach (array_keys(d365_training_courses()) as $course) {
+                $urls[] = d365_course_url($course, false);
+                $urls[] = d365_course_url($course, true);
             }
             $urls[] = d365_michael_url(false);
             $urls[] = d365_michael_url(true);

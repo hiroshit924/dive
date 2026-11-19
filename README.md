@@ -36,8 +36,8 @@ docker compose exec -T --user www-data wordpress php /tmp/wp-cli.phar --path=/va
 ## 日程・予約の運用
 
 1. 管理画面の「ダイビング日程」からタイトル、開催日（日本時間）、英語のイベント名、コースを登録し、予約受付を「受付中」にして公開します。
-2. 申請は「ダイビング予約」に「未対応」で保存されます。公開日程のない場合も希望日の相談を受け付けます。管理者が詳細を確認し、顧客にメール等で連絡してから対応状況を更新します。申請者の情報は管理者向けの予約詳細に表示されます。
-3. 受付終了時は日程の受付状態を変更します。同じ日程への複数の問い合わせを受ける方式で、空席数の自動確保や自動メール送信は未実装です。
+2. 申請は「ダイビング予約」に「未対応」で保存されます。公開日程はカレンダーから参加申請できます。公開日程がない場合も希望日の相談を受け付けます。お客様には受付メールを、WordPressの管理者メールアドレスには新着通知を自動送信します。管理者は予約詳細で申請内容を確認し、対応状況を更新できます。
+3. 受付終了時は日程の受付状態を変更します。予約を確定・受付不可・キャンセルに変更すると、お客様へ結果を自動送信します。送信処理の結果は予約詳細に表示します。メールの配信は本番のWordPressメール設定（SMTP等）を利用します。
 
 ## 継続開発と本番切替
 
@@ -54,7 +54,7 @@ docker compose exec -T --user www-data wordpress php /tmp/wp-cli.phar --path=/va
 
 ### 海外ツアー
 
-- 日英の `/dive-trips/overseas/` と `/en/dive-trips/overseas/` から、不定期開催の案内とパラオ・プーケット・サイパン・バリのスポットを確認できます。掲載地点や写真クレジットは `overseas-destinations.php` で管理します。
+- 日英の `/dive-trips/overseas/` と `/en/dive-trips/overseas/` から、不定期開催の案内とパラオ・プーケット・サイパン・バリのスポットを確認できます。掲載地点は `overseas-destinations.php` で管理します。
 - パラオとプーケットのご案内は依頼時に共有された現地情報を参照しました。海外ツアーの開催予定、価格、参加条件は実施ごとに確定し、問い合わせは既存のファンダイブ予約・相談フォームに届きます。
 
 ### ブランドとイラスト
@@ -62,15 +62,12 @@ docker compose exec -T --user www-data wordpress php /tmp/wp-cli.phar --path=/va
 - 公開サイトと検索メタデータの店名は `Diving Shop C365` です。本番に既存のDBを復元した際は、WordPressの「設定 → 一般」でサイトのタイトルも揃えてください。マイケル君と初めての方向けの3ステップをトップに掲載しています。キャラクター紹介は日英の `/michael/` と `/en/michael/` にあります。既存の縦型ロゴはヘッダー、マスクとフィンのロゴはフッターに使っています。
 - マイケルと各イラストはテーマの `assets/` にWebPで保存しています。見出しの一部は自己ホストの Zen Maru Gothic を使用しています。フォントのライセンスは同じディレクトリにあります。
 
-### マイケル君の海日記
+### マイケル君の海日記とブログ
 
-海日記は通常のダイビングブログとして登録されます。別のWordPressへ反映する場合は、サイトのバックアップを移すか、対象サイトで公開を確認した上で以下の手順で記事と4枚の画像を登録します。
+マイケル君の海日記は日英のキャラクター紹介ページに収録しています。写真4枚はテーマに同梱しています。以前取り込んだ海日記の記事URLは、紹介ページ内の海日記へ転送します。
 
-```bash
-docker compose exec -T wordpress mkdir -p /tmp/d365-diary-content
-docker compose cp content/michael-diary/. wordpress:/tmp/d365-diary-content/
-docker compose cp scripts/import-michael-diary.php wordpress:/tmp/d365-import-diary.php
-docker compose exec -T wordpress chmod -R a+rX /tmp/d365-import-diary.php /tmp/d365-diary-content
-docker compose exec -T --user www-data wordpress php /tmp/wp-cli.phar --path=/var/www/html \
-  eval-file /tmp/d365-import-diary.php /tmp/d365-diary-content
-```
+ブログ一覧ではアイキャッチを優先し、設定されていない記事は本文の先頭画像をサムネイルに使います。記事と写真は既存のWordPressのデータを使います。
+
+### PADI講習・スキルアップ
+
+講習トップと6つの講習詳細を日英で用意しています。講習の説明、料金、参加条件はテーマの `training-courses.php` で管理しています。C365の開催が確認済みの講習は既存の税込料金を掲載し、その他は開催・料金を相談する形にしています。各講習から日本語のPADI公式案内を開けます。
