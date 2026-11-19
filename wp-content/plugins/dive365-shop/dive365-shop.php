@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Dive 365 Shop
  * Description: Bilingual calendar, booking requests and emails, and legacy post type support.
- * Version: 1.6.0
+ * Version: 1.7.0
  * Requires PHP: 8.1
  */
 
@@ -110,6 +110,12 @@ add_filter('redirect_canonical', static function ($redirect) {
     return ((d365_is_english() && is_front_page()) || get_query_var('d365_courses') === '1' || get_query_var('d365_michael') === '1' || in_array(get_query_var('d365_experience'), ['trial', 'tour', 'overseas'], true)) ? false : $redirect;
 });
 
+add_action('template_redirect', static function (): void {
+    if (is_front_page()) {
+        nocache_headers();
+    }
+});
+
 function d365_now(): DateTimeImmutable {
     return new DateTimeImmutable('now', new DateTimeZone('Asia/Tokyo'));
 }
@@ -150,21 +156,10 @@ function d365_booking_period(int $id): string {
     return $start !== '' && $end > $start ? $start . ' – ' . $end : $start;
 }
 
-function d365_sessions(string $from, string $to = ''): array {
-    $start = $to === ''
-        ? ['key' => '_d365_date', 'compare' => 'EXISTS']
-        : ['key' => '_d365_date', 'value' => $to, 'compare' => '<='];
+function d365_sessions(): array {
     return get_posts([
         'post_type' => 'd365_session', 'post_status' => 'publish', 'posts_per_page' => -1,
-        'orderby' => ['start_date' => 'ASC', 'ID' => 'ASC'],
-        'meta_query' => [
-            'start_date' => $start,
-            [
-                'relation' => 'OR',
-                ['key' => '_d365_date', 'value' => $from, 'compare' => '>='],
-                ['key' => '_d365_end_date', 'value' => $from, 'compare' => '>='],
-            ],
-        ],
+        'meta_key' => '_d365_date', 'orderby' => ['meta_value' => 'ASC', 'ID' => 'ASC'],
     ]);
 }
 
@@ -210,7 +205,7 @@ function d365_session_box(WP_Post $post): void {
     <?php
 }
 
-add_action('save_post_d365_session', static function (int $id): void {
+add_action('save_post_d365_session', static function (int $id, WP_Post $post): void {
     if (wp_is_post_revision($id) || wp_is_post_autosave($id) || !current_user_can('edit_post', $id)
         || !wp_verify_nonce(d365_input($_POST, 'd365_session_nonce'), 'd365_save_session')) {
         return;
@@ -220,7 +215,7 @@ add_action('save_post_d365_session', static function (int $id): void {
         ? d365_input($_POST, 'd365_end_date')
         : (string) get_post_meta($id, '_d365_end_date', true);
     $service = d365_input($_POST, 'd365_service');
-    if (($date !== '' && !d365_date($date))
+    if (($date === '' ? $post->post_status === 'publish' : !d365_date($date))
         || ($end_date !== '' && ($date === '' || !d365_date($end_date) || $end_date < $date))) {
         add_filter('redirect_post_location', static fn (string $url): string =>
             add_query_arg('d365_invalid_period', '1', remove_query_arg('message', $url)));
@@ -231,7 +226,7 @@ add_action('save_post_d365_session', static function (int $id): void {
     update_post_meta($id, '_d365_en', sanitize_text_field(d365_input($_POST, 'd365_en')));
     update_post_meta($id, '_d365_service', array_key_exists($service, d365_services()) ? $service : 'trial');
     update_post_meta($id, '_d365_availability', d365_input($_POST, 'd365_availability') === 'open' ? 'open' : 'closed');
-});
+}, 10, 2);
 
 add_action('admin_notices', static function (): void {
     if (get_current_screen()?->post_type === 'd365_session' && d365_input($_GET, 'd365_invalid_period') === '1') {

@@ -3,11 +3,38 @@ defined('ABSPATH') || exit;
 
 $english = d365_is_english();
 $today = d365_now();
+$today_start = $today->setTime(0, 0);
 $current = $today->modify('first day of this month')->setTime(0, 0);
+$published = [];
+$months = [$current->format('Y-m') => $current];
+foreach (d365_sessions() as $session) {
+    [$start, $end] = d365_session_dates($session->ID);
+    if (!$start) {
+        continue;
+    }
+    $published[] = [$session, $start, $end];
+    for ($cursor = $start->modify('first day of this month'); $cursor <= $end; $cursor = $cursor->modify('+1 month')) {
+        $months[$cursor->format('Y-m')] = $cursor;
+    }
+}
+ksort($months);
+$earliest = reset($months);
+$latest = max(end($months), $current->modify('+12 months'));
 $selected = d365_date(d365_input($_GET, 'dive_month'), 'Y-m');
-$first = $selected && $selected >= $current && $selected <= $current->modify('+12 months') ? $selected : $current;
+$first = $selected && $selected >= $earliest && $selected <= $latest ? $selected : $current;
 $month = $first->format('Y-m');
 $last = $first->modify('last day of this month');
+$month_url = static fn (DateTimeImmutable $date): string => d365_home($english, ['dive_month' => $date->format('Y-m')]) . '#calendar';
+$month_format = $english ? 'F Y' : 'Y年n月';
+$next_with_sessions = null;
+foreach ($months as $candidate) {
+    if ($candidate > $first && $candidate != $current) {
+        $next_with_sessions = $candidate;
+        break;
+    }
+}
+$months[$month] = $first;
+ksort($months);
 $sessions = [];
 $requested_session = d365_input($_GET, 'dive_session');
 $chosen_session = d365_open_booking_session($requested_session);
@@ -16,9 +43,8 @@ $show_tour_location = $preferred_service === 'tour';
 $days = $english ? ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] : ['月', '火', '水', '木', '金', '土', '日'];
 $days_with_sessions = [];
 $open_by_day = [];
-foreach (d365_sessions($first->format('Y-m-d'), $last->format('Y-m-d')) as $session) {
-    [$start, $end] = d365_session_dates($session->ID);
-    if (!$start || $end < $first || $start > $last) {
+foreach ($published as [$session, $start, $end]) {
+    if ($end < $first || $start > $last) {
         continue;
     }
     $open = d365_session_open($session);
@@ -26,7 +52,7 @@ foreach (d365_sessions($first->format('Y-m-d'), $last->format('Y-m-d')) as $sess
     $first_day = (int) max($start, $first)->format('j');
     $last_day = (int) min($end, $last)->format('j');
     for ($day = $first_day; $day <= $last_day; $day++) {
-        $days_with_sessions[$day] ??= $session->ID;
+        $days_with_sessions[$day][] = $session->ID;
         if ($open) {
             $open_by_day[$day][] = $session->ID;
         }
@@ -38,6 +64,11 @@ $format_period = static function (DateTimeImmutable $start, DateTimeImmutable $e
     return $start->format($format) . ($end > $start ? ($english ? ' – ' : '〜') . $end->format($format) : '');
 };
 $session_link = static fn (int $id): string => d365_home($english, ['dive_month' => $month, 'dive_session' => $id]) . '#booking';
+$schedule_link = static fn (int $id): string => '#dive-session-' . $id;
+$dive_icon = get_theme_file_uri('assets/first-dive-mask.webp');
+$status = static fn (bool $open, DateTimeImmutable $end): string => $open
+    ? d365_text('受付中', 'Booking open')
+    : ($end < $today_start ? d365_text('開催済み', 'Completed') : d365_text('受付終了', 'Booking closed'));
 $result = d365_input($_GET, 'booking');
 if ($result === '' && $requested_session !== '' && !$chosen_session) {
     $result = 'closed';
@@ -49,47 +80,98 @@ if ($result === '' && $requested_session !== '' && !$chosen_session) {
         <div class="schedule-grid">
             <div class="calendar-card">
                 <div class="month-nav">
-                    <?php if ($first > $current): ?>
-                        <a aria-label="<?= esc_attr(d365_text('前の月', 'Previous month')) ?>" href="<?= esc_url(d365_home($english, ['dive_month' => $first->modify('-1 month')->format('Y-m')]) . '#calendar') ?>">←</a>
+                    <?php if ($first > $earliest): ?>
+                        <a aria-label="<?= esc_attr(d365_text('前の月', 'Previous month')) ?>" href="<?= esc_url($month_url($first->modify('-1 month'))) ?>">←</a>
                     <?php else: ?><span></span><?php endif; ?>
-                    <strong><?= esc_html($first->format($english ? 'F Y' : 'Y年n月')) ?></strong>
-                    <?php if ($first < $current->modify('+12 months')): ?>
-                        <a aria-label="<?= esc_attr(d365_text('次の月', 'Next month')) ?>" href="<?= esc_url(d365_home($english, ['dive_month' => $first->modify('+1 month')->format('Y-m')]) . '#calendar') ?>">→</a>
+                    <strong><?= esc_html($first->format($month_format)) ?></strong>
+                    <?php if ($first < $latest): ?>
+                        <a aria-label="<?= esc_attr(d365_text('次の月', 'Next month')) ?>" href="<?= esc_url($month_url($first->modify('+1 month'))) ?>">→</a>
                     <?php else: ?><span></span><?php endif; ?>
                 </div>
+                <?php if (count($months) > 1): ?>
+                    <details class="calendar-months">
+                        <summary><?= esc_html(d365_text('表示する月を選ぶ', 'Choose a month')) ?></summary>
+                        <ul>
+                            <?php foreach ($months as $candidate): ?>
+                                <li><?php if ($candidate == $first): ?>
+                                    <strong aria-current="true"><?= esc_html($candidate->format($month_format)) ?></strong>
+                                <?php else: ?>
+                                    <a class="calendar-month-link" href="<?= esc_url($month_url($candidate)) ?>"><?= esc_html($candidate->format($month_format)) ?></a>
+                                <?php endif; ?></li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </details>
+                <?php endif; ?>
                 <table>
-                    <caption class="screen-reader-text"><?= esc_html($first->format($english ? 'F Y' : 'Y年n月')) ?></caption>
+                    <caption class="screen-reader-text"><?= esc_html($first->format($month_format)) ?></caption>
                     <thead><tr><?php foreach ($days as $day): ?><th scope="col"><?= esc_html($day) ?></th><?php endforeach; ?></tr></thead>
                     <tbody>
                     <?php $offset = (int) $first->format('N') - 1;
                     $total = (int) $last->format('j');
                     for ($week = 0; $week < (int) ceil(($total + $offset) / 7); $week++): ?>
-                        <tr><?php for ($col = 0; $col < 7; $col++):
-                            $day = $week * 7 + $col - $offset + 1; ?>
+                        <?php $week_start = $week * 7 - $offset + 1; ?>
+                        <tr class="calendar-dates"><?php for ($col = 0; $col < 7; $col++):
+                            $day = $week_start + $col; ?>
                             <td><?php if ($day >= 1 && $day <= $total):
                                 if (isset($days_with_sessions[$day])):
                                     $available_today = $open_by_day[$day] ?? [];
-                                    $direct = count($available_today) === 1;
+                                    $direct = $available_today && count($days_with_sessions[$day]) === 1;
                                     $label = $first->setDate((int) $first->format('Y'), (int) $first->format('n'), $day)->format($english ? 'F j' : 'n月j日');
                                     $label .= ' · ' . ($direct
                                         ? d365_text('参加をリクエスト', 'Request a spot')
                                         : d365_text('開催日程を見る', 'View sessions'));
                                     ?>
-                                    <a class="<?= $available_today ? 'calendar-day-open' : 'calendar-day-closed' ?>" href="<?= esc_url($direct ? $session_link($available_today[0]) : '#dive-session-' . $days_with_sessions[$day]) ?>" aria-label="<?= esc_attr($label) ?>"><?= esc_html((string) $day) ?></a>
+                                    <a class="<?= $available_today ? 'calendar-day-open' : 'calendar-day-closed' ?>" href="<?= esc_url($direct ? $session_link($available_today[0]) : $schedule_link($days_with_sessions[$day][0])) ?>" aria-label="<?= esc_attr($label) ?>"><?= esc_html((string) $day) ?></a>
                                 <?php elseif ($first->format('Y-m') === $today->format('Y-m') && $day === (int) $today->format('j')): ?>
                                     <span aria-current="date"><?= esc_html((string) $day) ?></span>
                                 <?php else: echo esc_html((string) $day); endif;
                             endif; ?></td>
                         <?php endfor; ?></tr>
+                        <?php
+                        // Each lane holds sessions in date order without overlap.
+                        $lanes = [];
+                        $lane_ends = [];
+                        foreach ($sessions as [$session, $start, $end, $open]) {
+                            $start_col = max((int) max($start, $first)->format('j') - $week_start, 0);
+                            $end_col = min((int) min($end, $last)->format('j') - $week_start, 6);
+                            if ($start_col > $end_col) {
+                                continue;
+                            }
+                            $lane = 0;
+                            while (($lane_ends[$lane] ?? -1) >= $start_col) {
+                                $lane++;
+                            }
+                            $lanes[$lane][] = [$session, $start, $end, $open, $start_col, $end_col];
+                            $lane_ends[$lane] = $end_col;
+                        }
+                        foreach ($lanes as $lane): ?>
+                            <tr class="calendar-bands">
+                                <?php $next_col = 0; foreach ($lane as [$session, $start, $end, $open, $start_col, $end_col]):
+                                    if ($start_col > $next_col): ?><td colspan="<?= esc_attr((string) ($start_col - $next_col)) ?>"></td><?php endif;
+                                    $title = d365_session_title($session);
+                                    $description = $title . ' · ' . $format_period($start, $end, true) . ' · ' . $status($open, $end);
+                                    $show_icon = $start >= $first && (int) $start->format('j') === $week_start + $start_col;
+                                    ?>
+                                    <td colspan="<?= esc_attr((string) ($end_col - $start_col + 1)) ?>">
+                                        <a class="calendar-band <?= $open ? 'calendar-band-open' : 'calendar-band-closed' ?>" href="<?= esc_url($open ? $session_link($session->ID) : $schedule_link($session->ID)) ?>" title="<?= esc_attr($description) ?>" aria-label="<?= esc_attr($description) ?>"><?php if ($show_icon): ?><img src="<?= esc_url($dive_icon) ?>" width="17" height="17" alt=""> <?php endif; ?><?= esc_html($title) ?></a>
+                                    </td>
+                                    <?php $next_col = $end_col + 1; ?>
+                                <?php endforeach;
+                                if ($next_col < 7): ?><td colspan="<?= esc_attr((string) (7 - $next_col)) ?>"></td><?php endif; ?>
+                            </tr>
+                        <?php endforeach; ?>
                     <?php endfor; ?>
                     </tbody>
                 </table>
-                <?php if ($open_by_day): ?>
-                    <p class="calendar-legend"><?= esc_html(d365_text('青い日付から参加をリクエストできます。', 'Select a blue date to request a spot.')) ?></p>
+                <?php if ($sessions): ?>
+                    <p class="calendar-legend">
+                        <span class="calendar-legend-open"><?= esc_html(d365_text('受付中', 'Booking open')) ?></span>
+                        <span class="calendar-legend-closed"><?= esc_html(d365_text('受付終了・開催済み', 'Booking closed or completed')) ?></span>
+                    </p>
                 <?php endif; ?>
             </div>
             <div class="calendar-schedule">
-                <h3><?= esc_html(d365_text('今月の開催日程', 'Sessions this month')) ?></h3>
+                <h3><?= esc_html(d365_text($first->format($month_format) . 'の開催日程', 'Sessions in ' . $first->format($month_format))) ?></h3>
                 <?php if (!$sessions): ?><p><?= esc_html(d365_text('この月の開催日程はまだ掲載されていません。', 'No sessions have been posted for this month.')) ?></p><?php endif; ?>
                 <?php foreach ($sessions as [$session, $start, $end, $open]):
                     $service = d365_services()[get_post_meta($session->ID, '_d365_service', true)] ?? '';
@@ -100,9 +182,12 @@ if ($result === '' && $requested_session !== '' && !$chosen_session) {
                         <small><?= esc_html($service) ?></small></div>
                         <?php if ($open): ?>
                             <a href="<?= esc_url($session_link($session->ID)) ?>"><?= esc_html(d365_text('参加をリクエスト', 'Request a spot')) ?></a>
-                        <?php else: ?><span><?= esc_html(d365_text('受付終了', 'Closed')) ?></span><?php endif; ?>
+                        <?php else: ?><span><?= esc_html($status($open, $end)) ?></span><?php endif; ?>
                     </article>
                 <?php endforeach; ?>
+                <?php if ($next_with_sessions): ?>
+                    <a class="text-link calendar-month-link" href="<?= esc_url($month_url($next_with_sessions)) ?>"><?= esc_html(d365_text($next_with_sessions->format($month_format) . 'の開催日程を見る', 'See sessions in ' . $next_with_sessions->format($month_format))) ?> →</a>
+                <?php endif; ?>
             </div>
         </div>
     </div>

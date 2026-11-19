@@ -1,7 +1,7 @@
 /*
 Theme Name: Diving Shop C365
 Description: Bilingual diving shop theme for Diving Shop C365, Yokohama.
-Version: 1.6.3
+Version: 1.6.4
 Requires PHP: 8.1
 Text Domain: dive365
 */
@@ -98,12 +98,25 @@ html[lang=en] .hero h1{font-size:clamp(2.8rem,5.3vw,5.6rem)}
 .month-nav{display:grid;grid-template-columns:2.5rem 1fr 2.5rem;align-items:center;text-align:center;min-height:2.65rem}
 .month-nav a,.calendar td a,.calendar td [aria-current]{display:inline-flex;align-items:center;justify-content:center;width:2.25rem;height:2.25rem;border-radius:50%;background:#eaf5fd;text-decoration:none}
 .calendar td a{font-weight:850}
-.calendar td a.calendar-day-open{background:var(--sky);color:var(--navy)}
-.calendar td a.calendar-day-closed{color:var(--muted)}
-.calendar-legend{color:var(--muted);font-size:.84rem;margin-top:.9rem}
+.calendar-months{margin-top:.35rem;padding:.35rem 0;color:var(--navy);font-size:.85rem}
+.calendar-months ul{display:flex;flex-wrap:wrap;gap:.3rem .9rem;list-style:none;margin:.5rem 0 0;padding-left:0;max-height:10rem;overflow-y:auto}
+.calendar-months a{color:var(--sea);text-decoration:underline;text-underline-offset:.18em}
+.calendar td a:is(.calendar-day-open,.calendar-day-closed){width:min(95%,2.25rem);border-radius:.65rem;vertical-align:middle}
+.calendar td a.calendar-day-open{background:#a9eafe;color:#073e63}
+.calendar td a.calendar-day-closed{background:#e8defa;color:#49366b}
+.calendar-legend{display:flex;flex-wrap:wrap;gap:.3rem .9rem;color:var(--muted);font-size:.82rem;margin-top:.9rem}
+.calendar-legend span::before{content:"";display:inline-block;width:.75em;height:.75em;margin-inline-end:.3em;border-radius:.22em;background:#00739c}
+.calendar-legend .calendar-legend-closed::before{background:#7655a8}
 .calendar td [aria-current]{border:1px solid var(--line)}
 .calendar table{width:100%;table-layout:fixed;border-collapse:collapse;text-align:center;margin-top:.65rem}
 .calendar :is(th,td){height:2.75rem;border-top:1px solid var(--line);font-size:.9rem}
+.calendar .calendar-bands td{height:auto;padding:.09rem .12rem .16rem;border:0;vertical-align:top;text-align:left}
+.calendar td a.calendar-band{display:block;width:auto;height:auto;border-radius:.38rem;padding:.21rem .28rem;font-size:clamp(.66rem,1.5vw,.82rem);font-weight:750;line-height:1.26;overflow-wrap:anywhere}
+.calendar-band img{display:inline-block;width:1.06rem;height:1.06rem;vertical-align:middle;object-fit:contain}
+.calendar td a.calendar-band-open{border-inline-start:3px solid #00739c;background:#c6edfa;color:#073e63}
+.calendar td a.calendar-band-closed{border-inline-start:3px solid #7655a8;background:#ebe2f8;color:#49366b}
+.calendar td a.calendar-band:hover{text-decoration:underline}
+.calendar a:focus-visible,.calendar-months summary:focus-visible{outline:2px solid var(--sea);outline-offset:1px}
 .session-item{display:flex;justify-content:space-between;align-items:center;gap:.8rem;padding:1rem 0;border-bottom:1px solid var(--line)}
 .session-item strong,.session-item small,.session-item time{display:block}
 .session-item a{font-weight:750;color:var(--sea)}

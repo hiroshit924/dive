@@ -8,7 +8,7 @@ if (diveCalendar && window.fetch && window.DOMParser && window.history.replaceSt
             return;
         }
 
-        const link = event.target.closest?.('.schedule-grid .month-nav a[href]');
+        const link = event.target.closest?.('.schedule-grid .month-nav a[href], .schedule-grid a.calendar-month-link[href]');
         if (!link || link.origin !== window.location.origin) {
             return;
         }
@@ -29,7 +29,7 @@ if (diveCalendar && window.fetch && window.DOMParser && window.history.replaceSt
 
         try {
             destination.hash = '';
-            const response = await fetch(destination, {mode: 'same-origin'});
+            const response = await fetch(destination, {mode: 'same-origin', cache: 'no-store'});
             if (!response.ok) {
                 throw new Error('Could not load the calendar month.');
             }
