@@ -63,7 +63,46 @@ function d365_experience_url(string $type, bool $english): string {
     return add_query_arg('d365_experience', $type, d365_home($english));
 }
 
+require get_theme_file_path('tour-destinations.php');
+
+function d365_tour_area(): string {
+    $area = get_query_var('d365_tour_area');
+    return is_string($area) && isset(d365_tour_destinations()[$area]) && d365_experience() === 'tour' ? $area : '';
+}
+
+function d365_tour_area_url(string $area, bool $english): string {
+    if (get_option('permalink_structure')) {
+        return home_url(($english ? '/en' : '') . '/dive-trips/' . $area . '/');
+    }
+    return add_query_arg('d365_tour_area', $area, d365_experience_url('tour', $english));
+}
+
+function d365_tour_booking_url(string $destination = ''): string {
+    if (!function_exists('d365_show_booking')) {
+        return 'tel:+81452735496';
+    }
+    $args = ['dive_service' => 'tour'];
+    if ($destination !== '') {
+        $args['dive_destination'] = $destination;
+    }
+    return d365_home(d365_is_english(), $args) . '#booking';
+}
+
+add_filter('d365_booking_notes_default', static function (string $notes): string {
+    $destination = d365_input($_GET, 'dive_destination');
+    foreach (d365_tour_destinations() as $id => $area) {
+        $place = $destination === $id ? $area : ($area['spots'][$destination] ?? null);
+        if ($place) {
+            return d365_text('希望のエリア：', 'Preferred destination: ') . d365_text(...$place['name']);
+        }
+    }
+    return $notes;
+});
+
 function d365_landing_url(bool $english): string {
+    if ($area = d365_tour_area()) {
+        return d365_tour_area_url($area, $english);
+    }
     if (d365_is_courses()) {
         return d365_courses_url($english);
     }
@@ -75,7 +114,11 @@ add_filter('template_include', static function (string $template): string {
     if (d365_is_courses()) {
         return get_theme_file_path('courses.php');
     }
-    return d365_experience() ? get_theme_file_path('experiences.php') : $template;
+    return match (d365_experience()) {
+        'tour' => get_theme_file_path('tour.php'),
+        'trial' => get_theme_file_path('experiences.php'),
+        default => $template,
+    };
 });
 
 add_action('after_setup_theme', static function (): void {
@@ -98,9 +141,13 @@ add_filter('pre_get_document_title', static function (string $title): string {
     if (d365_is_courses()) {
         return d365_text('PADI講習・スキルアップ｜Dive 365', 'PADI Courses & Skills | Dive 365');
     }
+    if ($area = d365_tour_area()) {
+        $name = d365_text(...d365_tour_destinations()[$area]['name']);
+        return $name . d365_text('のダイビングスポット｜Dive 365', ' Dive Spots | Dive 365');
+    }
     $titles = [
         'trial' => d365_text('横浜から体験ダイビング｜Dive 365', 'Discover Scuba Diving from Yokohama | Dive 365'),
-        'tour' => d365_text('逗子・葉山・伊豆のダイビングツアー｜Dive 365', 'Dive Trips to Zushi, Hayama and Izu | Dive 365'),
+        'tour' => d365_text('三浦・逗子・葉山・伊豆のダイビングツアー｜Dive 365', 'Miura, Zushi, Hayama & Izu Dive Trips | Dive 365'),
     ];
     if (isset($titles[d365_experience()])) {
         return $titles[d365_experience()];

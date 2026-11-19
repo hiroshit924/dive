@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Dive 365 Shop
  * Description: Bilingual dive calendar, booking requests, and legacy post type support for Dive 365.
- * Version: 1.0.0
+ * Version: 1.1.0
  * Requires PHP: 8.1
  */
 
@@ -28,6 +28,8 @@ function d365_home(bool $english, array $args = []): string {
 
 function d365_register(): void {
     add_rewrite_rule('^en/discover-scuba/?$', 'index.php?d365_lang=en&d365_experience=trial', 'top');
+    add_rewrite_rule('^en/dive-trips/(miura-zushi-hayama|izu)/?$', 'index.php?d365_lang=en&d365_experience=tour&d365_tour_area=$matches[1]', 'top');
+    add_rewrite_rule('^dive-trips/(miura-zushi-hayama|izu)/?$', 'index.php?d365_experience=tour&d365_tour_area=$matches[1]', 'top');
     add_rewrite_rule('^en/dive-trips/?$', 'index.php?d365_lang=en&d365_experience=tour', 'top');
     add_rewrite_rule('^en/courses/?$', 'index.php?d365_lang=en&d365_courses=1', 'top');
     add_rewrite_rule('^en/?$', 'index.php?d365_lang=en', 'top');
@@ -68,14 +70,23 @@ function d365_register(): void {
     ]);
 }
 add_action('init', 'd365_register', 20);
+function d365_refresh_rewrite_rules(): void {
+    if (get_option('d365_rewrite_version') !== '2') {
+        flush_rewrite_rules(false);
+        update_option('d365_rewrite_version', '2');
+    }
+}
+add_action('wp_loaded', 'd365_refresh_rewrite_rules');
 register_activation_hook(__FILE__, static function (): void {
     d365_register();
     flush_rewrite_rules(false);
+    update_option('d365_rewrite_version', '2');
 });
 add_filter('query_vars', static function (array $vars): array {
     $vars[] = 'd365_lang';
     $vars[] = 'd365_courses';
     $vars[] = 'd365_experience';
+    $vars[] = 'd365_tour_area';
     return $vars;
 });
 add_filter('request', static function (array $vars): array {

@@ -122,7 +122,7 @@ $result = d365_input($_GET, 'booking');
                     <label for="d365_people"><?= esc_html(d365_text('参加人数', 'Number of guests')) ?></label>
                     <input id="d365_people" type="number" name="people" value="1" min="1" max="10" required>
                     <label for="d365_message"><?= esc_html(d365_text('連絡事項（任意）', 'Additional notes (optional)')) ?></label>
-                    <textarea id="d365_message" name="message" rows="3" maxlength="1000" aria-describedby="d365_notes_help"></textarea>
+                    <textarea id="d365_message" name="message" rows="3" maxlength="1000" aria-describedby="d365_notes_help"><?= esc_textarea(apply_filters('d365_booking_notes_default', '')) ?></textarea>
                     <small id="d365_notes_help"><?= esc_html(d365_text('健康情報の記入はお控えください。', 'Please leave out any medical information.')) ?></small>
                     <label class="consent"><input type="checkbox" name="consent" value="1" required>
                         <span><?= esc_html(d365_text('入力した情報を予約対応と連絡に使用することに同意します。', 'I agree that my details may be used to handle my request and contact me about it.')) ?>

@@ -1,7 +1,7 @@
 /*
 Theme Name: Dive 365
 Description: Bilingual diving shop theme for Dive 365, Yokohama.
-Version: 1.0.0
+Version: 1.1.0
 Requires PHP: 8.1
 Text Domain: dive365
 */
@@ -162,5 +162,58 @@ details p{padding-top:.65rem}
   .hero-image{object-position:93% 70%}
 }
 .trial-hero{background-image:linear-gradient(90deg,#071e2cf0,#082c4270),url("assets/trial.jpg")}
-.tour-hero{background-image:linear-gradient(90deg,#071e2cf0,#082c4270),url("assets/tour.jpg")}
 .course-page h2+.course-card{margin-top:1.2rem}
+
+/* Dive trips */
+.tour-banner{background:#e7f5f1;padding-block:clamp(2.8rem,7vw,6rem)}
+.tour-banner-inner{display:grid;grid-template-columns:1.03fr 1fr;align-items:center;gap:clamp(2rem,5vw,5rem)}
+.tour-kicker{color:#086458;font-weight:800;margin-bottom:1rem;font-size:.9rem}
+.tour-banner h1{font-size:clamp(2.6rem,6vw,5.8rem);font-weight:900;line-height:1.12;letter-spacing:-.077em;text-wrap:balance}
+.tour-intro{color:var(--muted);max-width:37rem;margin-top:1.3rem}
+.tour-actions{display:flex;align-items:center;flex-wrap:wrap;gap:.7rem 1.35rem;margin-top:1.5rem}
+.tour-actions .text-link,.tour-back{margin-top:0}
+.tour-back{margin-bottom:1.3rem}
+.tour-banner-photo{position:relative;margin:0}
+.tour-banner-photo img{width:100%;aspect-ratio:1.24;object-fit:cover;border-radius:45% 45% 1.5rem 1.5rem;box-shadow:var(--shadow)}
+.tour-banner-photo figcaption{position:absolute;bottom:1rem;right:1rem;border-radius:100px;padding:.28rem .8rem;background:#092c31d9;color:white;font-size:.8rem;font-weight:700}
+.tour-region-grid,.tour-spot-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(1rem,2vw,1.75rem);margin-top:1.6rem}
+.tour-region-card,.tour-spot{display:block;overflow:hidden;border:1px solid var(--line);background:white;border-radius:1.2rem;box-shadow:var(--shadow);text-decoration:none}
+.tour-region-card>img,.tour-spot>img{width:100%;object-fit:cover;aspect-ratio:2}
+.tour-region-card>div,.tour-spot-body{padding:clamp(1.1rem,3vw,2rem)}
+.tour-region-card h3,.tour-spot h3{font-size:clamp(1.45rem,3vw,2rem)}
+.tour-region-card p,.tour-spot-body>p:not(.tour-tag){margin-top:.55rem;color:var(--muted)}
+.tour-region-card:hover .text-link,.tour-region-card:focus-visible .text-link{text-decoration:underline}
+.tour-map-section{background:#ecf7f4}
+.tour-map-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);align-items:center;gap:clamp(1rem,4vw,3.6rem)}
+.tour-map-figure{margin:0;min-width:0}
+.tour-map-canvas{position:relative;border:1px solid #7fbfb4;border-radius:1.35rem;overflow:hidden}
+.tour-map-canvas img{width:100%}
+.tour-map-figure figcaption{font-size:.72rem;color:var(--muted);margin-top:.35rem;text-align:right}
+.tour-map-label{position:absolute;top:var(--y);left:var(--x);translate:-50% -50%;pointer-events:none;color:#2d6257;font-size:clamp(.58rem,2vw,1rem);font-weight:800;text-align:center;line-height:1.15}
+.tour-map-label.sea{color:#316877}
+.tour-pin-anchor,.tour-map-group{--pin-bg:#09675d}
+.tour-pin-anchor.is-izu,.tour-map-group.is-izu{--pin-bg:#3d5491}
+.tour-pin-anchor{position:absolute;top:var(--y);left:var(--x)}
+.tour-pin-anchor::before{content:"";position:absolute;width:6px;height:6px;border-radius:50%;background:var(--pin-bg);translate:-50% -50%}
+.tour-pin-anchor::after{content:"";position:absolute;left:0;top:0;width:var(--leader);height:2px;background:var(--pin-bg);transform-origin:left;transform:rotate(var(--angle));pointer-events:none}
+.tour-pin,.tour-pin-number{border-radius:50%;display:grid;place-items:center;font-weight:850;color:white;background:var(--pin-bg);text-decoration:none;line-height:1}
+.tour-pin{position:absolute;left:var(--dx);top:var(--dy);translate:-50% -50%;width:2rem;height:2rem;z-index:1;border:2px solid white;font-size:.82rem;box-shadow:0 3px 5px #14395244}
+.tour-pin:hover,.tour-pin:focus-visible{background:var(--navy);z-index:2}
+.tour-map-group+ .tour-map-group{margin-top:1.25rem}
+.tour-map-group ul{list-style:none;padding:0;margin:.45rem 0 0}
+.tour-map-group li a{display:flex;align-items:center;gap:.55rem;padding:.42rem 0;border-bottom:1px solid var(--line);text-decoration:none;font-weight:800}
+.tour-map-group li a:hover{text-decoration:underline}
+.tour-pin-number{min-width:1.5rem;height:1.5rem;font-size:.7rem}
+.tour-map-feature{font-size:.8rem;font-weight:500;color:var(--muted);margin-inline-start:auto;text-align:end}
+.tour-spot{scroll-margin-top:1.3rem}
+.tour-spot:target{border-color:#07816c;box-shadow:0 0 0 2px #07816c}
+.tour-spot-body>p.tour-location{font-size:.8rem;margin:0 0 .2rem}
+.tour-tag{display:inline-block;border-radius:100px;background:#e3f6ef;color:#126358;font-weight:750;font-size:.8rem;margin:.7rem 0 .15rem;padding:.28rem .65rem}
+.tour-next{background:#e7f5f1;padding-block:2.2rem}
+.tour-next h2{font-size:clamp(1.65rem,3.4vw,2.7rem)}
+.tour-cta{background:var(--navy);color:white;padding-block:clamp(2.5rem,6vw,4rem)}
+.tour-cta .wrap{display:flex;align-items:center;justify-content:space-between;gap:1.25rem;flex-wrap:wrap}
+.tour-cta h2{font-size:clamp(1.8rem,4vw,3.2rem)}
+.tour-cta p{margin-top:.7rem;color:#deefea}
+@media(max-width:850px){.tour-banner-inner,.tour-map-grid{grid-template-columns:1fr}.tour-banner-photo img{aspect-ratio:1.6}}
+@media(max-width:595px){.tour-region-grid,.tour-spot-grid{grid-template-columns:1fr}.tour-pin{width:1.7rem;height:1.7rem;font-size:.7rem}}

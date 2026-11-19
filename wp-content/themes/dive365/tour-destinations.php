@@ -11,6 +11,7 @@ function d365_tour_destinations(): array {
                 'Explore the rocky reefs of Jogashima, schools of fish off Kotsubo and the shores of Hayama. Find a dive to match your mood close to Yokohama.',
             ],
             'photo' => 'tour-miura.webp',
+            'photo_caption' => ['城ヶ島', 'Jogashima'],
             'spots' => [
                 'jogashima' => [
                     'name' => ['城ヶ島', 'Jogashima'], 'location' => ['神奈川県三浦市', 'Miura, Kanagawa'],
@@ -49,6 +50,7 @@ function d365_tour_destinations(): array {
                 'Look for tiny creatures in sheltered bays, swim past schools of fish, or explore rock formations and wrecks. The Izu Peninsula has a different dive around every bend.',
             ],
             'photo' => 'tour-izu.webp',
+            'photo_caption' => ['大瀬崎', 'Osezaki'],
             'spots' => [
                 'osezaki' => [
                     'name' => ['大瀬崎', 'Osezaki'], 'location' => ['静岡県沼津市', 'Numazu, Shizuoka'],

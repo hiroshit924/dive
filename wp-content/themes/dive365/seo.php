@@ -23,8 +23,13 @@ add_action('wp_head', static function (): void {
     } elseif ($experience === 'tour') {
         $description = d365_text('横浜のDive 365が案内する逗子・葉山・伊豆のファンダイブ。ツアー料金、器材レンタル、日程と予約をご案内します。', 'Join Dive 365 in Yokohama for guided dives in Zushi, Hayama and Izu. See trip prices, rental options and booking information.');
     }
+    $area_id = d365_tour_area();
+    $area = $area_id ? d365_tour_destinations()[$area_id] : null;
+    if ($area) {
+        $description = d365_text(...$area['description']);
+    }
     $url = d365_landing_url($english);
-    $image = d365_asset($experience ? $experience . '.jpg' : ($course ? 'course.jpg' : 'hero.jpg'));
+    $image = d365_asset($area['photo'] ?? ($experience ? $experience . '.jpg' : ($course ? 'course.jpg' : 'hero.jpg')));
     $schema = [
         '@context' => 'https://schema.org',
         '@type' => 'SportsActivityLocation',
@@ -90,6 +95,10 @@ add_action('init', static function (): void {
                 if (get_post_type($id) !== 'page' || get_post_status($id) !== 'publish') {
                     $urls[] = d365_experience_url($type, false);
                 }
+            }
+            foreach (array_keys(d365_tour_destinations()) as $area) {
+                $urls[] = d365_tour_area_url($area, false);
+                $urls[] = d365_tour_area_url($area, true);
             }
             return array_map(static fn(string $url): array => ['loc' => $url], $urls);
         }
