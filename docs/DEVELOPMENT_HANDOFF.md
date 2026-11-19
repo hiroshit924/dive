@@ -44,12 +44,17 @@ GitHubの取得時に `handoff/2026-11-19` を選ぶ。既存のチェックア�
 
 ```bash
 git status --short --branch
-git fetch origin
 git switch handoff/2026-11-19
 git log -1 --oneline
 ```
 
-ローカルブランチが作成されていない場合は `git switch --track origin/handoff/2026-11-19` を使う。
+`main` のみを取得した環境など、ローカルに作業ブランチがない場合は明示的に取得する。
+
+```bash
+git remote set-branches --add origin handoff/2026-11-19
+git fetch origin handoff/2026-11-19
+git switch --track origin/handoff/2026-11-19
+```
 
 Dockerデーモン、Docker Compose v2、Bash、curl、Python 3、tarが必要。JavaScriptの構文確認にはNode.jsを使う。開発用の管理者パスワードは初回だけローカルで入力する。
 
