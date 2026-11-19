@@ -7,7 +7,7 @@ function d365_send_booking_mail(int $id, string $kind): void {
     $english = $kind !== 'staff' && get_post_meta($id, '_d365_language', true) === 'English';
     $service = (string) get_post_meta($id, '_d365_service', true);
     $session = (string) get_post_meta($id, '_d365_session_title', true);
-    $date = (string) get_post_meta($id, '_d365_session_date', true);
+    $period = d365_booking_period($id);
     $tour_location = (string) get_post_meta($id, '_d365_tour_location', true);
     $people = (int) get_post_meta($id, '_d365_people', true);
 
@@ -15,8 +15,11 @@ function d365_send_booking_mail(int $id, string $kind): void {
     if ($session !== '') {
         $details[] = ($english ? 'Requested session: ' : '申込日程：') . $session;
     }
-    if ($date !== '') {
-        $details[] = ($english ? 'Requested date (Japan time): ' : '希望日（日本時間）：') . $date;
+    if ($period !== '') {
+        $label = $session !== '' || (int) get_post_meta($id, '_d365_session', true) > 0
+            ? ($english ? 'Session dates (Japan time): ' : '開催日程（日本時間）：')
+            : ($english ? 'Requested date (Japan time): ' : '希望日（日本時間）：');
+        $details[] = $label . $period;
     }
     if ($tour_location !== '') {
         $details[] = ($english ? 'Preferred destination: ' : '行ってみたい場所：') . $tour_location;

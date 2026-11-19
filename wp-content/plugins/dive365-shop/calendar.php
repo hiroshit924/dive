@@ -8,7 +8,7 @@ $selected = d365_date(d365_input($_GET, 'dive_month'), 'Y-m');
 $first = $selected && $selected >= $current && $selected <= $current->modify('+12 months') ? $selected : $current;
 $month = $first->format('Y-m');
 $last = $first->modify('last day of this month');
-$sessions = d365_sessions($first->format('Y-m-d'), $last->format('Y-m-d'));
+$sessions = [];
 $requested_session = d365_input($_GET, 'dive_session');
 $chosen_session = d365_open_booking_session($requested_session);
 $preferred_service = $chosen_session ? (string) get_post_meta($chosen_session->ID, '_d365_service', true) : d365_input($_GET, 'dive_service');
@@ -16,13 +16,27 @@ $show_tour_location = $preferred_service === 'tour';
 $days = $english ? ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] : ['月', '火', '水', '木', '金', '土', '日'];
 $days_with_sessions = [];
 $open_by_day = [];
-foreach ($sessions as $session) {
-    $day = (int) substr(get_post_meta($session->ID, '_d365_date', true), -2);
-    $days_with_sessions[$day] = true;
-    if (d365_session_open($session)) {
-        $open_by_day[$day][] = $session->ID;
+foreach (d365_sessions($first->format('Y-m-d'), $last->format('Y-m-d')) as $session) {
+    [$start, $end] = d365_session_dates($session->ID);
+    if (!$start || $end < $first || $start > $last) {
+        continue;
+    }
+    $open = d365_session_open($session);
+    $sessions[] = [$session, $start, $end, $open];
+    $first_day = (int) max($start, $first)->format('j');
+    $last_day = (int) min($end, $last)->format('j');
+    for ($day = $first_day; $day <= $last_day; $day++) {
+        $days_with_sessions[$day] ??= $session->ID;
+        if ($open) {
+            $open_by_day[$day][] = $session->ID;
+        }
     }
 }
+$format_period = static function (DateTimeImmutable $start, DateTimeImmutable $end, bool $show_year = false) use ($english): string {
+    $show_year = $show_year || $start->format('Y') !== $end->format('Y');
+    $format = $show_year ? ($english ? 'M j, Y' : 'Y年n月j日') : ($english ? 'M j' : 'n月j日');
+    return $start->format($format) . ($end > $start ? ($english ? ' – ' : '〜') . $end->format($format) : '');
+};
 $session_link = static fn (int $id): string => d365_home($english, ['dive_month' => $month, 'dive_session' => $id]) . '#booking';
 $result = d365_input($_GET, 'booking');
 if ($result === '' && $requested_session !== '' && !$chosen_session) {
@@ -61,7 +75,7 @@ if ($result === '' && $requested_session !== '' && !$chosen_session) {
                                         ? d365_text('参加をリクエスト', 'Request a spot')
                                         : d365_text('開催日程を見る', 'View sessions'));
                                     ?>
-                                    <a class="<?= $available_today ? 'calendar-day-open' : 'calendar-day-closed' ?>" href="<?= esc_url($direct ? $session_link($available_today[0]) : '#dives-' . $day) ?>" aria-label="<?= esc_attr($label) ?>"><?= esc_html((string) $day) ?></a>
+                                    <a class="<?= $available_today ? 'calendar-day-open' : 'calendar-day-closed' ?>" href="<?= esc_url($direct ? $session_link($available_today[0]) : '#dive-session-' . $days_with_sessions[$day]) ?>" aria-label="<?= esc_attr($label) ?>"><?= esc_html((string) $day) ?></a>
                                 <?php elseif ($first->format('Y-m') === $today->format('Y-m') && $day === (int) $today->format('j')): ?>
                                     <span aria-current="date"><?= esc_html((string) $day) ?></span>
                                 <?php else: echo esc_html((string) $day); endif;
@@ -77,21 +91,17 @@ if ($result === '' && $requested_session !== '' && !$chosen_session) {
             <div class="calendar-schedule">
                 <h3><?= esc_html(d365_text('今月の開催日程', 'Sessions this month')) ?></h3>
                 <?php if (!$sessions): ?><p><?= esc_html(d365_text('この月の開催日程はまだ掲載されていません。', 'No sessions have been posted for this month.')) ?></p><?php endif; ?>
-                <?php $previous_day = 0; foreach ($sessions as $session):
-                    $date = d365_date((string) get_post_meta($session->ID, '_d365_date', true));
-                    if (!$date) { continue; }
-                    $day = (int) $date->format('j');
+                <?php foreach ($sessions as [$session, $start, $end, $open]):
                     $service = d365_services()[get_post_meta($session->ID, '_d365_service', true)] ?? '';
                     ?>
-                    <article class="session-item" <?php if ($day !== $previous_day): ?>id="dives-<?= esc_attr((string) $day) ?>"<?php endif; ?>>
-                        <div><time datetime="<?= esc_attr($date->format('Y-m-d')) ?>"><?= esc_html($date->format($english ? 'M j' : 'n月j日')) ?></time>
+                    <article class="session-item" id="dive-session-<?= esc_attr((string) $session->ID) ?>">
+                        <div><span><?= esc_html($format_period($start, $end)) ?></span>
                         <strong><?= esc_html(d365_session_title($session)) ?></strong>
                         <small><?= esc_html($service) ?></small></div>
-                        <?php if (d365_session_open($session)): ?>
+                        <?php if ($open): ?>
                             <a href="<?= esc_url($session_link($session->ID)) ?>"><?= esc_html(d365_text('参加をリクエスト', 'Request a spot')) ?></a>
                         <?php else: ?><span><?= esc_html(d365_text('受付終了', 'Closed')) ?></span><?php endif; ?>
                     </article>
-                    <?php $previous_day = $day; ?>
                 <?php endforeach; ?>
             </div>
         </div>
@@ -111,10 +121,10 @@ if ($result === '' && $requested_session !== '' && !$chosen_session) {
                     <?php wp_nonce_field('d365_book', 'd365_nonce', false); ?>
                     <div hidden aria-hidden="true"><label>Company <input type="text" name="company" tabindex="-1" autocomplete="off"></label></div>
                     <?php if ($chosen_session):
-                        $chosen_date = d365_date((string) get_post_meta($chosen_session->ID, '_d365_date', true)); ?>
+                        [$chosen_start, $chosen_end] = d365_session_dates($chosen_session->ID); ?>
                         <input type="hidden" name="session" value="<?= esc_attr((string) $chosen_session->ID) ?>">
                         <p class="booking-session">
-                            <time datetime="<?= esc_attr($chosen_date->format('Y-m-d')) ?>"><?= esc_html($chosen_date->format($english ? 'M j, Y' : 'Y年n月j日')) ?></time>
+                            <?= esc_html($format_period($chosen_start, $chosen_end, true)) ?>
                             · <strong><?= esc_html(d365_session_title($chosen_session)) ?></strong>
                             <a href="<?= esc_url(d365_home($english, ['dive_month' => $month]) . '#calendar') ?>"><?= esc_html(d365_text('日程を選び直す', 'Change date')) ?></a>
                         </p>

@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Dive 365 Shop
  * Description: Bilingual calendar, booking requests and emails, and legacy post type support.
- * Version: 1.5.1
+ * Version: 1.6.0
  * Requires PHP: 8.1
  */
 
@@ -138,16 +138,33 @@ function d365_session_title(WP_Post $event): string {
     return d365_is_english() && $translation !== '' ? $translation : $event->post_title;
 }
 
+function d365_session_dates(int $id): array {
+    $start = d365_date((string) get_post_meta($id, '_d365_date', true));
+    $end = d365_date((string) get_post_meta($id, '_d365_end_date', true));
+    return [$start, $start && $end && $end >= $start ? $end : $start];
+}
+
+function d365_booking_period(int $id): string {
+    $start = (string) get_post_meta($id, '_d365_session_date', true);
+    $end = (string) get_post_meta($id, '_d365_session_end_date', true);
+    return $start !== '' && $end > $start ? $start . ' – ' . $end : $start;
+}
+
 function d365_sessions(string $from, string $to = ''): array {
-    $dates = ['key' => '_d365_date', 'value' => $from, 'compare' => '>='];
-    if ($to !== '') {
-        $dates['value'] = [$from, $to];
-        $dates['compare'] = 'BETWEEN';
-    }
+    $start = $to === ''
+        ? ['key' => '_d365_date', 'compare' => 'EXISTS']
+        : ['key' => '_d365_date', 'value' => $to, 'compare' => '<='];
     return get_posts([
         'post_type' => 'd365_session', 'post_status' => 'publish', 'posts_per_page' => -1,
-        'meta_key' => '_d365_date', 'orderby' => ['meta_value' => 'ASC', 'ID' => 'ASC'],
-        'meta_query' => [$dates],
+        'orderby' => ['start_date' => 'ASC', 'ID' => 'ASC'],
+        'meta_query' => [
+            'start_date' => $start,
+            [
+                'relation' => 'OR',
+                ['key' => '_d365_date', 'value' => $from, 'compare' => '>='],
+                ['key' => '_d365_end_date', 'value' => $from, 'compare' => '>='],
+            ],
+        ],
     ]);
 }
 
@@ -172,11 +189,14 @@ add_action('add_meta_boxes', static function (): void {
 function d365_session_box(WP_Post $post): void {
     wp_nonce_field('d365_save_session', 'd365_session_nonce');
     $date = get_post_meta($post->ID, '_d365_date', true);
+    $end_date = get_post_meta($post->ID, '_d365_end_date', true);
     $english = get_post_meta($post->ID, '_d365_en', true);
     $availability = get_post_meta($post->ID, '_d365_availability', true);
     $service = get_post_meta($post->ID, '_d365_service', true);
     ?>
-    <p><label for="d365_date">開催日（日本時間）</label><br><input type="date" id="d365_date" name="d365_date" value="<?= esc_attr($date) ?>"></p>
+    <p><label for="d365_date">開始日（日本時間）</label><br><input type="date" id="d365_date" name="d365_date" value="<?= esc_attr($date) ?>"></p>
+    <p><label for="d365_end_date">終了日（日本時間・任意）</label><br><input type="date" id="d365_end_date" name="d365_end_date" value="<?= esc_attr($end_date) ?>" aria-describedby="d365_end_date_help"></p>
+    <p class="description" id="d365_end_date_help">1日開催の場合は終了日を空欄にしてください。複数日開催の場合は、終了日までがひとつの予約日程になります。</p>
     <p><label for="d365_en">英語でのイベント名</label><br><input class="widefat" id="d365_en" name="d365_en" value="<?= esc_attr($english) ?>"></p>
     <p><label for="d365_service">コース</label><br><select id="d365_service" name="d365_service">
         <?php foreach (d365_services() as $key => $label): ?>
@@ -196,25 +216,41 @@ add_action('save_post_d365_session', static function (int $id): void {
         return;
     }
     $date = d365_input($_POST, 'd365_date');
+    $end_date = array_key_exists('d365_end_date', $_POST)
+        ? d365_input($_POST, 'd365_end_date')
+        : (string) get_post_meta($id, '_d365_end_date', true);
     $service = d365_input($_POST, 'd365_service');
-    update_post_meta($id, '_d365_date', d365_date($date) ? $date : '');
+    if (($date !== '' && !d365_date($date))
+        || ($end_date !== '' && ($date === '' || !d365_date($end_date) || $end_date < $date))) {
+        add_filter('redirect_post_location', static fn (string $url): string =>
+            add_query_arg('d365_invalid_period', '1', remove_query_arg('message', $url)));
+        return;
+    }
+    update_post_meta($id, '_d365_date', $date);
+    update_post_meta($id, '_d365_end_date', $end_date);
     update_post_meta($id, '_d365_en', sanitize_text_field(d365_input($_POST, 'd365_en')));
     update_post_meta($id, '_d365_service', array_key_exists($service, d365_services()) ? $service : 'trial');
     update_post_meta($id, '_d365_availability', d365_input($_POST, 'd365_availability') === 'open' ? 'open' : 'closed');
+});
+
+add_action('admin_notices', static function (): void {
+    if (get_current_screen()?->post_type === 'd365_session' && d365_input($_GET, 'd365_invalid_period') === '1') {
+        echo '<div class="notice notice-error"><p>開催日程の設定を保存できませんでした。開始日を入力し、終了日は開始日以降に設定してください。</p></div>';
+    }
 });
 
 function d365_booking_box(WP_Post $post): void {
     wp_nonce_field('d365_save_booking', 'd365_booking_nonce');
     $labels = [
         'name' => 'お名前', 'email' => 'メール', 'people' => '人数',
-        'session_title' => '申込時の日程名', 'session_date' => '開催日・希望日', 'service' => 'ご相談内容',
+        'session_title' => '申込時の日程名', 'session_date' => '開催期間・希望日', 'service' => 'ご相談内容',
         'tour_location' => '行ってみたい場所',
         'language' => '言語', 'message' => '連絡事項',
     ];
     ?>
     <dl>
         <?php foreach ($labels as $key => $label):
-            $value = (string) get_post_meta($post->ID, '_d365_' . $key, true);
+            $value = $key === 'session_date' ? d365_booking_period($post->ID) : (string) get_post_meta($post->ID, '_d365_' . $key, true);
             if ($key === 'tour_location' && $value === '') { continue; }
             ?>
             <dt><strong><?= esc_html($label) ?></strong></dt>
@@ -256,18 +292,21 @@ add_filter('manage_d365_booking_posts_columns', static function (array $columns)
 });
 add_action('manage_d365_booking_posts_custom_column', static function (string $column, int $id): void {
     if ($column === 'session') {
-        echo esc_html(get_post_meta($id, '_d365_session_date', true) . ' ' . get_post_meta($id, '_d365_session_title', true));
+        echo esc_html(trim(d365_booking_period($id) . ' ' . get_post_meta($id, '_d365_session_title', true)));
     } elseif ($column === 'status') {
         $status = get_post_meta($id, '_d365_status', true);
         echo esc_html(d365_statuses()[$status] ?? '未対応');
     }
 }, 10, 2);
 add_filter('manage_d365_session_posts_columns', static function (array $columns): array {
-    return array_merge(array_diff_key($columns, ['date' => true]), ['session_date' => '開催日', 'availability' => '予約受付']);
+    return array_merge(array_diff_key($columns, ['date' => true]), ['session_date' => '開催期間', 'availability' => '予約受付']);
 });
 add_action('manage_d365_session_posts_custom_column', static function (string $column, int $id): void {
     if ($column === 'session_date') {
-        echo esc_html(get_post_meta($id, '_d365_date', true));
+        [$start, $end] = d365_session_dates($id);
+        if ($start) {
+            echo esc_html($start->format('Y-m-d') . ($end > $start ? ' – ' . $end->format('Y-m-d') : ''));
+        }
     } elseif ($column === 'availability') {
         echo d365_session_open(get_post($id)) ? '受付中' : '受付終了';
     }
@@ -305,6 +344,7 @@ function d365_record_booking(array $input, bool $english): string {
     $service = d365_input($input, 'service');
     // Earlier copies of the form may still submit a preferred date.
     $date = d365_input($input, 'preferred_date');
+    $end_date = '';
     $event = null;
     if ($session !== '') {
         $event = d365_open_booking_session($session);
@@ -312,7 +352,9 @@ function d365_record_booking(array $input, bool $english): string {
             return 'closed';
         }
         $service = (string) get_post_meta($event->ID, '_d365_service', true);
-        $date = (string) get_post_meta($event->ID, '_d365_date', true);
+        [$start, $end] = d365_session_dates($event->ID);
+        $date = $start->format('Y-m-d');
+        $end_date = $end->format('Y-m-d');
     }
     if (!isset(d365_services()[$service]) || ($date !== '' && (!d365_date($date) || $date < d365_now()->format('Y-m-d')))) {
         return 'invalid';
@@ -337,7 +379,8 @@ function d365_record_booking(array $input, bool $english): string {
             '_d365_message' => $message, '_d365_language' => $english ? 'English' : '日本語',
             '_d365_tour_location' => wp_slash($tour_location),
             '_d365_session' => $event->ID ?? 0, '_d365_session_title' => $english && $event_en !== '' ? $event_en : ($event->post_title ?? ''),
-            '_d365_session_date' => $date, '_d365_service' => $service, '_d365_status' => 'pending',
+            '_d365_session_date' => $date, '_d365_session_end_date' => $end_date,
+            '_d365_service' => $service, '_d365_status' => 'pending',
         ],
     ], true);
     if (!$booking || is_wp_error($booking)) {
