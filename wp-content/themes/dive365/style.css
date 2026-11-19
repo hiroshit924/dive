@@ -1,7 +1,7 @@
 /*
 Theme Name: Diving Shop C365
 Description: Bilingual diving shop theme for Diving Shop C365, Yokohama.
-Version: 1.6.5
+Version: 1.7.0
 Requires PHP: 8.1
 Text Domain: dive365
 */
@@ -208,7 +208,6 @@ details p{padding-top:.65rem}
   .site-header nav{flex-wrap:wrap;column-gap:.75rem;row-gap:.35rem}
   .site-header nav a{font-size:.76rem}
 }
-.trial-hero{background-image:linear-gradient(90deg,#eef9fff7 6%,#e9f6ffe5 57%,#e9f6ff75),url("assets/trial.jpg")}
 .course-page h2+.course-card{margin-top:1.2rem}
 
 /* Dive trips */

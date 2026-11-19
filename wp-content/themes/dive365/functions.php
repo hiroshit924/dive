@@ -202,6 +202,9 @@ add_action('after_setup_theme', static function (): void {
 add_action('wp_enqueue_scripts', static function (): void {
     $version = wp_get_theme()->get('Version');
     wp_enqueue_style('dive365', get_stylesheet_uri(), [], $version);
+    if (in_array(d365_experience(), ['trial', 'tour'], true)) {
+        wp_enqueue_style('dive365-experience', d365_asset('dive-experience.css'), ['dive365'], $version);
+    }
     wp_enqueue_script('dive365', d365_asset('site.js'), [], $version, ['in_footer' => true, 'strategy' => 'defer']);
     if (function_exists('d365_show_booking') && (is_front_page() || is_page(9))) {
         wp_enqueue_script('dive365-calendar-month', d365_asset('calendar-month.js'), [], $version, ['in_footer' => true, 'strategy' => 'defer']);

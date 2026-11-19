@@ -27,6 +27,7 @@ $tour_url = d365_experience_url('tour', $english);
                     <div class="tour-actions">
                         <a class="button" href="#tour-map"><?php d365_label('地図で行き先を探す', 'Explore the map'); ?> <span aria-hidden="true">↓</span></a>
                         <a class="text-link" href="<?= esc_url(d365_tour_booking_url()) ?>"><?php d365_label('日程を相談する', 'Request a date'); ?> <span aria-hidden="true">↗</span></a>
+                        <a class="text-link" href="#rental-gear"><?php d365_label('器材レンタル', 'Equipment rental'); ?> <span aria-hidden="true">↓</span></a>
                     </div>
                 <?php endif; ?>
             </div>
@@ -106,24 +107,21 @@ $tour_url = d365_experience_url('tour', $english);
                     </article>
                 </div>
                 <p class="course-note"><?php d365_label('海況によって日程や行き先が変わる場合があります。器材レンタルは別料金です。', 'Routes and dates may change depending on conditions. Rental equipment is charged separately.'); ?></p>
-                <details>
-                    <summary><?php d365_label('器材レンタル料金', 'Equipment rental prices'); ?></summary>
-                    <ul>
-                        <li><?php d365_label('軽器材 ¥1,500', 'Mask, snorkel and fins ¥1,500'); ?></li>
-                        <li><?php d365_label('レギュレーター ¥2,000', 'Regulator ¥2,000'); ?></li>
-                        <li>BCD ¥2,000</li>
-                        <li><?php d365_label('ウェットスーツ ¥1,500', 'Wetsuit ¥1,500'); ?></li>
-                        <li><?php d365_label('ドライスーツ ¥4,000', 'Drysuit ¥4,000'); ?></li>
-                    </ul>
-                </details>
             </div>
         </section>
+    <?php endif; ?>
+    <?php if (!$area): ?>
+        <?php get_template_part('template-parts/rental-gear'); ?>
+        <?php get_template_part('template-parts/cancellation-policy'); ?>
     <?php endif; ?>
     <section class="tour-cta">
         <div class="wrap">
             <div>
                 <h2><?php d365_label('次に潜りたい海、決まった？', 'Found a spot you’d love to dive?'); ?></h2>
                 <p><?php d365_label('行ってみたい場所や希望日を教えてください。経験や海況に合わせてご提案します。', 'Tell us where and when you’d like to dive. We’ll help you find a trip that matches your experience and the conditions.'); ?></p>
+                <?php if ($area): ?>
+                    <a class="text-link" href="<?= esc_url($tour_url . '#rental-gear') ?>"><?php d365_label('器材レンタル料金を見る', 'See rental equipment prices'); ?> <span aria-hidden="true">↗</span></a>
+                <?php endif; ?>
             </div>
             <a class="button" href="<?= esc_url(d365_tour_booking_url($area_id)) ?>"><?php d365_label('ツアーを相談する', 'Plan a dive trip'); ?> <span aria-hidden="true">↗</span></a>
         </div>

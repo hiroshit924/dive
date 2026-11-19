@@ -19,7 +19,7 @@ add_action('wp_head', static function (): void {
         : d365_text('横浜・桜木町のダイビングショップ Diving Shop C365。次のお休みに、逗子・葉山や伊豆の海へ。おひとりや初めての方も歓迎。体験ダイビング、PADI講習、ツアーの日程・予約をご案内します。', 'Based in Sakuragicho, Yokohama, Diving Shop C365 welcomes beginners and solo divers. Explore introductory dives, PADI courses and small-group trips to Zushi, Hayama and Izu.');
     $experience = d365_experience();
     if ($experience === 'trial') {
-        $description = d365_text('横浜のDiving Shop C365で初めての体験ダイビング。料金、参加条件、持ち物を確認し、開催日程や希望日からお申し込みください。', 'Try scuba diving with Diving Shop C365, based in Yokohama. See what is included, check participation requirements and request a date.');
+        $description = d365_text('横浜のDiving Shop C365から初めての体験ダイビングへ。マイケル君と写真で当日の流れを確認。器材込み18,000円、持ち物、参加条件、日程相談をご案内します。', 'Plan your first scuba dive with Diving Shop C365 in Yokohama. Follow Michael’s photo guide, check eligibility and what to pack, and ask for a date. Equipment included, ¥18,000 per person.');
     } elseif ($experience === 'overseas') {
         $description = d365_text('横浜のDiving Shop C365が不定期で開催する海外ダイビングツアー。パラオ、プーケット、サイパン、バリのダイビングポイントと開催相談をご案内します。', 'Explore dive sites in Palau, Phuket, Saipan and Bali. Diving Shop C365 runs occasional overseas dive trips and takes inquiries from Yokohama.');
     } elseif ($experience === 'tour') {
