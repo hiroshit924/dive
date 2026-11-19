@@ -59,16 +59,16 @@ if (hero) {
 }
 
 const booking = document.querySelector('.d365-booking-form');
-if (booking) {
-    const session = booking.elements.namedItem('session');
+const tourLocationGroup = booking?.querySelector('.booking-tour-location');
+if (tourLocationGroup) {
     const service = booking.elements.namedItem('service');
-    const date = booking.elements.namedItem('preferred_date');
-    function showRequestFields() {
-        const scheduled = session.value !== '';
-        service.disabled = scheduled;
-        service.required = !scheduled;
-        date.disabled = scheduled;
+    const tourLocation = booking.elements.namedItem('tour_location');
+    function updateTourLocation() {
+        const isTour = service.value === 'tour';
+        tourLocationGroup.hidden = !isTour;
+        tourLocation.disabled = !isTour;
     }
-    session.addEventListener('change', showRequestFields);
-    showRequestFields();
+    service.addEventListener('change', updateTourLocation);
+    window.addEventListener('pageshow', updateTourLocation);
+    updateTourLocation();
 }

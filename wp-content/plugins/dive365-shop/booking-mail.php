@@ -36,10 +36,14 @@ function d365_send_booking_mail(int $id, string $kind): void {
         $service = (string) get_post_meta($id, '_d365_service', true);
         $session = (string) get_post_meta($id, '_d365_session_title', true);
         $date = (string) get_post_meta($id, '_d365_session_date', true);
+        $tour_location = (string) get_post_meta($id, '_d365_tour_location', true);
         $people = (int) get_post_meta($id, '_d365_people', true);
         $body = $english ? "Hi $name," : "$name 様";
         $body .= "\n\n" . $message[$locale];
-        $body .= "\n\n" . ($english ? 'Course: ' : 'コース：') . (d365_services($english)[$service] ?? $service);
+        $body .= "\n\n" . ($english ? 'Inquiry topic: ' : 'ご相談内容：') . (d365_services($english)[$service] ?? $service);
+        if ($tour_location !== '') {
+            $body .= "\n" . ($english ? 'Preferred destination: ' : '行ってみたい場所：') . $tour_location;
+        }
         if ($session !== '') {
             $body .= "\n" . ($english ? 'Requested session: ' : '申込日程：') . $session;
         }

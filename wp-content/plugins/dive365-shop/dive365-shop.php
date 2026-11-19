@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Dive 365 Shop
  * Description: Bilingual calendar, booking requests and emails, and legacy post type support.
- * Version: 1.4.0
+ * Version: 1.5.0
  * Requires PHP: 8.1
  */
 
@@ -158,6 +158,12 @@ function d365_session_open(WP_Post $event): bool {
         && get_post_meta($event->ID, '_d365_availability', true) === 'open';
 }
 
+function d365_open_booking_session(string $value): ?WP_Post {
+    $id = filter_var($value, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+    $event = $id ? get_post($id) : null;
+    return $event && d365_session_open($event) ? $event : null;
+}
+
 add_action('add_meta_boxes', static function (): void {
     add_meta_box('d365_session', '開催日程の設定', 'd365_session_box', 'd365_session');
     add_meta_box('d365_booking', '予約申請の詳細', 'd365_booking_box', 'd365_booking');
@@ -201,14 +207,17 @@ function d365_booking_box(WP_Post $post): void {
     wp_nonce_field('d365_save_booking', 'd365_booking_nonce');
     $labels = [
         'name' => 'お名前', 'email' => 'メール', 'people' => '人数',
-        'session_title' => '申込時の日程名', 'session_date' => '開催日・希望日', 'service' => 'コース',
+        'session_title' => '申込時の日程名', 'session_date' => '開催日・希望日', 'service' => 'ご相談内容',
+        'tour_location' => '行ってみたい場所',
         'language' => '言語', 'message' => '連絡事項',
     ];
     ?>
     <dl>
-        <?php foreach ($labels as $key => $label): ?>
+        <?php foreach ($labels as $key => $label):
+            $value = (string) get_post_meta($post->ID, '_d365_' . $key, true);
+            if ($key === 'tour_location' && $value === '') { continue; }
+            ?>
             <dt><strong><?= esc_html($label) ?></strong></dt>
-            <?php $value = (string) get_post_meta($post->ID, '_d365_' . $key, true); ?>
             <dd><?= nl2br(esc_html($key === 'service' ? (d365_services()[$value] ?? $value) : $value)) ?></dd>
         <?php endforeach; ?>
     </dl>
@@ -281,12 +290,12 @@ function d365_record_booking(array $input, bool $english): string {
 
     $session = d365_input($input, 'session');
     $service = d365_input($input, 'service');
+    // Earlier copies of the form may still submit a preferred date.
     $date = d365_input($input, 'preferred_date');
     $event = null;
     if ($session !== '') {
-        $id = filter_var($session, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
-        $event = $id ? get_post($id) : null;
-        if (!$event || !d365_session_open($event)) {
+        $event = d365_open_booking_session($session);
+        if (!$event) {
             return 'closed';
         }
         $service = (string) get_post_meta($event->ID, '_d365_service', true);
@@ -301,8 +310,9 @@ function d365_record_booking(array $input, bool $english): string {
     $email = sanitize_email($raw_email);
     $people = filter_var(d365_input($input, 'people'), FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 10]]);
     $message = sanitize_textarea_field(d365_input($input, 'message'));
+    $tour_location = $service === 'tour' ? sanitize_text_field(d365_input($input, 'tour_location')) : '';
     if ($name === '' || strlen($name) > 400 || !is_email($email) || $email !== $raw_email || strlen($email) > 254
-        || !$people || strlen($message) > 4000 || d365_input($input, 'consent') !== '1') {
+        || !$people || strlen($message) > 4000 || strlen($tour_location) > 400 || d365_input($input, 'consent') !== '1') {
         return 'invalid';
     }
 
@@ -312,6 +322,7 @@ function d365_record_booking(array $input, bool $english): string {
         'meta_input' => [
             '_d365_name' => $name, '_d365_email' => $email, '_d365_people' => $people,
             '_d365_message' => $message, '_d365_language' => $english ? 'English' : '日本語',
+            '_d365_tour_location' => wp_slash($tour_location),
             '_d365_session' => $event->ID ?? 0, '_d365_session_title' => $english && $event_en !== '' ? $event_en : ($event->post_title ?? ''),
             '_d365_session_date' => $date, '_d365_service' => $service, '_d365_status' => 'pending',
         ],

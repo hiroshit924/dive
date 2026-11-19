@@ -1,7 +1,7 @@
 /*
 Theme Name: Diving Shop C365
 Description: Bilingual diving shop theme for Diving Shop C365, Yokohama.
-Version: 1.6.0
+Version: 1.6.1
 Requires PHP: 8.1
 Text Domain: dive365
 */
@@ -375,3 +375,28 @@ details p{padding-top:.65rem}
 .staff-card>img{object-fit:contain;aspect-ratio:5/4;padding:clamp(.65rem,1.6vw,1.15rem);background:var(--mist)}
 
 @media(max-width:820px){.calendar-schedule::before{width:min(58%,12rem)}}
+
+.training-contents{background:#fff;border-bottom:1px solid var(--line)}
+.training-contents ul{display:flex;align-items:center;flex-wrap:wrap;gap:.35rem 1.3rem;padding:0;list-style:none;margin-block:.35rem}
+.training-contents a{display:inline-flex;align-items:center;min-height:2.55rem;font-size:.9rem;font-weight:800;color:var(--navy);text-decoration:none}
+.training-contents a:hover,.training-contents a:focus-visible{color:var(--sea);text-decoration:underline}
+.training-guide-layout{max-width:56rem;margin-top:1.4rem}
+.training-guide-layout.has-course-photo{max-width:none;display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,.7fr);gap:clamp(1.25rem,4vw,4rem);align-items:start}
+.training-chapters{display:grid;gap:1rem}
+.training-chapter{padding:clamp(1.1rem,2.5vw,1.65rem);border:1px solid var(--line);border-radius:var(--radius);background:#fff}
+.training-chapter h3{font-size:clamp(1.1rem,2.35vw,1.4rem);color:var(--navy);line-height:1.4}
+.training-chapter p{max-width:68ch;color:var(--muted);line-height:1.85;margin-top:.6rem}
+.training-field-photo{margin:0}
+.training-field-photo img{width:100%;max-height:25rem;object-fit:cover;object-position:center;border-radius:var(--radius);box-shadow:var(--shadow)}
+.training-field-photo figcaption{margin-top:.55rem;color:var(--muted);font-size:.84rem}
+.training-checklist{display:grid;gap:.8rem;list-style:none;margin:0;padding:clamp(1.15rem,3vw,2rem);border:1px solid var(--line);border-radius:var(--radius);background:white}
+.training-checklist li{position:relative;padding-left:1.55rem;color:var(--muted)}
+.training-checklist li::before{content:"";position:absolute;left:.15rem;top:.4em;width:.48rem;height:.72rem;border:solid var(--sea);border-width:0 2px 2px 0;transform:rotate(45deg)}
+.training-faq details:first-child{padding-top:.35rem}
+.training-faq p{color:var(--muted);line-height:1.8}
+.training-practice .course-card p+p{margin-top:.65rem}
+@media(max-width:740px){.training-guide-layout.has-course-photo{grid-template-columns:1fr}.training-field-photo{max-width:26rem}.training-contents ul{gap:.15rem .95rem}}
+
+.booking-session{margin-bottom:.8rem;color:var(--navy);font-size:.92rem;font-weight:750}
+.booking-tour-location{margin-top:.8rem}
+@media(min-width:741px){.training-field-photo{position:sticky;top:1.5rem}}

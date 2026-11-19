@@ -27,64 +27,11 @@ $overview = d365_courses_url($english);
         </div>
     </section>
     <?php if ($course): ?>
-        <section class="section training-section" id="course-details">
-            <div class="wrap training-detail-grid">
-                <div>
-                    <h2><?php d365_label('参加条件', 'Requirements'); ?></h2>
-                    <ul class="training-requirements">
-                        <?php foreach ($course['requirements'] as $requirement): ?><li><?= esc_html(d365_text(...$requirement)) ?></li><?php endforeach; ?>
-                    </ul>
-                    <?php if (isset($course['price'])): ?>
-                        <p class="course-note"><?php d365_label('参加前に健康状態を確認します。C365では60歳以上の方に医師の診断書をお願いしています。', 'We check your health questionnaire before training. C365 asks participants aged 60 and above to provide medical clearance.'); ?></p>
-                    <?php endif; ?>
-                </div>
-                <aside class="course-card training-price">
-                    <h2><?php d365_label('料金・日数', 'Price and duration'); ?></h2>
-                    <?php if (isset($course['price'])): ?>
-                        <p class="course-price"><?= esc_html($course['price']) ?> <small><?php d365_label('税込', 'tax included'); ?></small></p>
-                        <p><?= esc_html(d365_text(...$course['duration'])) ?></p>
-                        <h3><?php d365_label('料金に含まれるもの', 'What is included'); ?></h3>
-                        <p><?= esc_html(d365_text(...$course['includes'])) ?></p>
-                        <p class="course-note"><?= esc_html(d365_text(...$course['note'])) ?></p>
-                    <?php else: ?>
-                        <p class="course-price"><?= esc_html($availability) ?></p>
-                        <p><?php d365_label('C365での開催可否、日数、費用はコースごとにご案内します。', 'Contact C365 for local availability, duration and a price for your course.'); ?></p>
-                    <?php endif; ?>
-                    <?php if (isset($course['padi'])): ?>
-                        <a class="text-link" href="<?= esc_url(d365_padi_course_url($course['padi'])) ?>"><?php d365_label('PADI公式のコース案内', 'Official PADI course (Japanese)'); ?> <span aria-hidden="true">↗</span></a>
-                    <?php endif; ?>
-                </aside>
-            </div>
-        </section>
-        <section class="section training-practice">
-            <div class="wrap">
-                <?php if (isset($course['topics'])): ?>
-                    <h2><?php d365_label('テーマから選ぶ', 'Explore specialty topics'); ?></h2>
-                    <div class="course-grid">
-                        <?php foreach ($course['topics'] as [$name, $detail, $slug]): ?>
-                            <article class="course-card">
-                                <h3><?= esc_html(d365_text(...$name)) ?></h3>
-                                <p><?= esc_html(d365_text(...$detail)) ?></p>
-                                <a class="text-link" href="<?= esc_url(d365_padi_course_url($slug)) ?>"><?php d365_label('PADI公式の詳細', 'PADI details (Japanese)'); ?> <span aria-hidden="true">↗</span></a>
-                            </article>
-                        <?php endforeach; ?>
-                    </div>
-                <?php else: ?>
-                    <h2><?php d365_label('講習の流れ', 'How the course works'); ?></h2>
-                    <ol class="training-steps">
-                        <?php foreach ($course['steps'] as [$name, $detail]): ?>
-                            <li class="course-card">
-                                <h3><?= esc_html(d365_text(...$name)) ?></h3>
-                                <p><?= esc_html(d365_text(...$detail)) ?></p>
-                            </li>
-                        <?php endforeach; ?>
-                    </ol>
-                <?php endif; ?>
-                <?php if ($course_id === 'open-water' || $course_id === 'advanced'): ?>
-                    <p class="course-note"><?php d365_label('水着やタオルなどの持ち物と集合場所は、日程が決まり次第ご案内します。', 'Once your dates are set, we’ll send the meeting point and a list of what to bring, such as swimwear and a towel.'); ?></p>
-                <?php endif; ?>
-            </div>
-        </section>
+        <?php get_template_part('template-parts/training-detail', null, [
+            'course' => $course,
+            'course_id' => $course_id,
+            'availability' => $availability,
+        ]); ?>
     <?php else: ?>
         <section class="section training-section" id="course-options">
             <div class="wrap">

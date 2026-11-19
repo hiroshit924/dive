@@ -129,21 +129,25 @@ add_filter('d365_booking_notes_default', static function (string $notes): string
     if (d365_input($_GET, 'dive_service') === 'course' && $course) {
         return d365_text('希望の講習：', 'Preferred course: ') . d365_text(...$course['name']);
     }
+    return $notes;
+});
+
+add_filter('d365_booking_tour_location_default', static function (string $location): string {
     $destination = d365_input($_GET, 'dive_destination');
     if ($destination === 'overseas') {
-        return d365_text('海外ツアーについて相談したい', 'I am interested in an overseas dive trip');
+        return d365_text('海外ツアー', 'Overseas dive trip');
     }
     $overseas = d365_overseas_destinations()[$destination] ?? null;
     if ($overseas) {
-        return d365_text('海外ツアーの希望先：', 'Preferred overseas destination: ') . d365_text(...$overseas['name']);
+        return d365_text(...$overseas['name']);
     }
     foreach (d365_tour_destinations() as $id => $area) {
         $place = $destination === $id ? $area : ($area['spots'][$destination] ?? null);
         if ($place) {
-            return d365_text('希望のエリア：', 'Preferred destination: ') . d365_text(...$place['name']);
+            return d365_text(...$place['name']);
         }
     }
-    return $notes;
+    return $location;
 });
 
 function d365_is_michael(): bool {
@@ -199,6 +203,9 @@ add_action('wp_enqueue_scripts', static function (): void {
     $version = wp_get_theme()->get('Version');
     wp_enqueue_style('dive365', get_stylesheet_uri(), [], $version);
     wp_enqueue_script('dive365', d365_asset('site.js'), [], $version, ['in_footer' => true, 'strategy' => 'defer']);
+    if (function_exists('d365_show_booking') && (is_front_page() || is_page(9))) {
+        wp_enqueue_script('dive365-calendar-month', d365_asset('calendar-month.js'), [], $version, ['in_footer' => true, 'strategy' => 'defer']);
+    }
 });
 add_filter('language_attributes', static function (string $attributes): string {
     return d365_is_english() ? 'lang="en"' : 'lang="ja"';

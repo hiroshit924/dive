@@ -9,9 +9,10 @@ $first = $selected && $selected >= $current && $selected <= $current->modify('+1
 $month = $first->format('Y-m');
 $last = $first->modify('last day of this month');
 $sessions = d365_sessions($first->format('Y-m-d'), $last->format('Y-m-d'));
-$open_sessions = array_filter(d365_sessions($today->format('Y-m-d'), $current->modify('+12 months')->modify('last day of this month')->format('Y-m-d')), 'd365_session_open');
-$preferred_service = d365_input($_GET, 'dive_service');
-$chosen = absint(d365_input($_GET, 'dive_session'));
+$requested_session = d365_input($_GET, 'dive_session');
+$chosen_session = d365_open_booking_session($requested_session);
+$preferred_service = $chosen_session ? (string) get_post_meta($chosen_session->ID, '_d365_service', true) : d365_input($_GET, 'dive_service');
+$show_tour_location = $preferred_service === 'tour';
 $days = $english ? ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] : ['月', '火', '水', '木', '金', '土', '日'];
 $days_with_sessions = [];
 $open_by_day = [];
@@ -30,6 +31,9 @@ $feedback = [
     'error' => d365_text('送信できませんでした。時間をおいて再度お試しください。', 'Your request could not be saved. Please try again shortly.'),
 ];
 $result = d365_input($_GET, 'booking');
+if ($result === '' && $requested_session !== '' && !$chosen_session) {
+    $result = 'closed';
+}
 ?>
 <section id="calendar" class="section calendar">
     <div class="wrap">
@@ -103,7 +107,7 @@ $result = d365_input($_GET, 'booking');
     <div class="wrap booking-grid">
         <div>
             <h2><?= esc_html(d365_text('ダイビングを予約', 'Request a dive')) ?></h2>
-            <p><?= esc_html(d365_text('開催日程を選ぶか、希望日をお知らせください。予約の確定はスタッフからご連絡します。', 'Choose a scheduled dive or tell us your preferred date. Our team will contact you to confirm your booking.')) ?></p>
+            <p><?= esc_html(d365_text('カレンダーの日程から参加を申し込むか、ご相談内容をお知らせください。スタッフが確認し、ご連絡します。', 'Request a spot from the calendar or tell us what you’d like to discuss. Our team will follow up to confirm your booking.')) ?></p>
             <p><a href="tel:+81452735496">045-273-5496</a></p>
         </div>
         <div>
@@ -116,22 +120,26 @@ $result = d365_input($_GET, 'booking');
                     <input type="hidden" name="language" value="<?= $english ? 'en' : 'ja' ?>">
                     <?php wp_nonce_field('d365_book', 'd365_nonce', false); ?>
                     <div hidden aria-hidden="true"><label>Company <input type="text" name="company" tabindex="-1" autocomplete="off"></label></div>
-                    <label for="d365_session_id"><?= esc_html(d365_text('開催日程', 'Session')) ?></label>
-                    <select id="d365_session_id" name="session">
-                        <option value=""><?= esc_html(d365_text('希望日を相談する', 'Discuss another date')) ?></option>
-                        <?php foreach ($open_sessions as $session): ?>
-                            <option value="<?= esc_attr((string) $session->ID) ?>" <?php selected($chosen, $session->ID); ?>><?= esc_html(get_post_meta($session->ID, '_d365_date', true) . ' — ' . d365_session_title($session)) ?></option>
-                        <?php endforeach; ?>
-                    </select>
-                    <label for="d365_service"><?= esc_html(d365_text('希望のコース', 'Preferred dive or course')) ?></label>
-                    <select id="d365_service" name="service">
-                        <option value=""><?= esc_html(d365_text('コースを選ぶ（日程を相談する場合）', 'Select a course if discussing a date')) ?></option>
+                    <?php if ($chosen_session):
+                        $chosen_date = d365_date((string) get_post_meta($chosen_session->ID, '_d365_date', true)); ?>
+                        <input type="hidden" name="session" value="<?= esc_attr((string) $chosen_session->ID) ?>">
+                        <p class="booking-session">
+                            <time datetime="<?= esc_attr($chosen_date->format('Y-m-d')) ?>"><?= esc_html($chosen_date->format($english ? 'M j, Y' : 'Y年n月j日')) ?></time>
+                            · <strong><?= esc_html(d365_session_title($chosen_session)) ?></strong>
+                            <a href="<?= esc_url(d365_home($english, ['dive_month' => $month]) . '#calendar') ?>"><?= esc_html(d365_text('日程を選び直す', 'Change date')) ?></a>
+                        </p>
+                    <?php endif; ?>
+                    <label for="d365_service"><?= esc_html(d365_text('ご相談内容', 'Inquiry topic')) ?></label>
+                    <select id="d365_service" name="service" <?= $chosen_session ? 'disabled' : 'required' ?>>
+                        <option value=""><?= esc_html(d365_text('ご相談内容を選んでください', 'Select a topic')) ?></option>
                         <?php foreach (d365_services() as $key => $label): ?>
                             <option value="<?= esc_attr($key) ?>" <?php selected($preferred_service, $key); ?>><?= esc_html($label) ?></option>
                         <?php endforeach; ?>
                     </select>
-                    <label for="d365_preferred_date"><?= esc_html(d365_text('希望日（日程を相談する場合・任意）', 'Preferred date (optional when discussing a date)')) ?></label>
-                    <input id="d365_preferred_date" type="date" name="preferred_date" min="<?= esc_attr($today->format('Y-m-d')) ?>">
+                    <div class="booking-tour-location" <?= $show_tour_location ? '' : 'hidden' ?>>
+                        <label for="d365_tour_location"><?= esc_html(d365_text('行ってみたい場所（任意）', 'Where would you like to dive? (optional)')) ?></label>
+                        <input id="d365_tour_location" name="tour_location" maxlength="100" value="<?= esc_attr($show_tour_location ? apply_filters('d365_booking_tour_location_default', '') : '') ?>" <?= $show_tour_location ? '' : 'disabled' ?>>
+                    </div>
                     <label for="d365_guest_name"><?= esc_html(d365_text('お名前', 'Name')) ?></label>
                     <input id="d365_guest_name" name="guest_name" maxlength="100" autocomplete="name" required>
                     <label for="d365_guest_email"><?= esc_html(d365_text('メールアドレス', 'Email address')) ?></label>
