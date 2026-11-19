@@ -17,7 +17,7 @@ wp() {
 
 if ! wp core is-installed; then
     : "${DIVE365_ADMIN_PASSWORD:?Set a password for the local WordPress admin before first startup}"
-    wp core install --url="http://127.0.0.1:${DIVE365_PORT:-8080}" --title='Dive 365' \
+    wp core install --url="http://127.0.0.1:${DIVE365_PORT:-8080}" --title='Diving Shop C365' \
         --admin_user=dive365_local --admin_email=dive365@example.invalid \
         --admin_password="$DIVE365_ADMIN_PASSWORD" --skip-email
     wp option update blog_public 0

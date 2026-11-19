@@ -10,27 +10,62 @@ $staff = [
     ['益田 真緒', 'Mao Masuda', '非常勤インストラクター', 'Part-time Instructor', 'NAUIインストラクター、潜水士、小型船舶1級、特殊小型船舶。沖縄・慶良間・残波やパラオでガイドを経験。ドリフトからマクロまで対応します。', 'NAUI instructor and licensed commercial diver, with guiding experience in Okinawa, the Kerama Islands, Zanpa and Palau, from drift dives to macro life.', 'instructor1.jpg'],
     ['水越 真彩', 'Maaya Mizukoshi', '非常勤インストラクター', 'Part-time Instructor', 'PADIインストラクター、2級小型船舶。宮崎でガイド・ツアー・ライセンス講習を担当。', 'PADI instructor and licensed boat operator, with experience guiding dives and teaching certification courses in Miyazaki.', 'instructor3.jpg'],
 ];
+$steps = [
+    ['calendar', '予約・相談', 'Request a date', '希望日や気になることをお知らせください。スタッフが参加条件や持ち物をご案内します。', 'Tell us your preferred date and ask us anything. We’ll explain the requirements and what to bring.'],
+    ['mask', '陸上で練習', 'Practice on land', 'まずは器材の使い方と呼吸の仕方を練習。準備ができたら水面へ。', 'Get familiar with your gear and practice breathing before you get in the water.'],
+    ['fish', 'インストラクターと海へ', 'Dive with your instructor', '少人数で、インストラクターと一緒に潜ります。自分のペースで海の中を楽しみましょう。', 'Explore in a small group with an instructor. Take it at your own pace and enjoy what you see.'],
+];
+$trial_booking = function_exists('d365_show_booking')
+    ? d365_home(d365_is_english(), ['dive_service' => 'trial']) . '#booking'
+    : 'tel:+81452735496';
 $news = get_posts(['post_type' => 'news', 'numberposts' => 4]);
 ?>
 <main id="main">
     <section class="hero">
-        <img class="hero-image" src="<?= esc_url(d365_asset('hero.jpg')) ?>" alt="" fetchpriority="high">
-        <video class="hero-video" muted loop playsinline preload="none" aria-hidden="true" data-src="<?= esc_url(d365_asset('coast.mp4')) ?>"></video>
-        <div class="wrap hero-content">
-            <p class="hero-location"><span></span><?php d365_label('横浜のダイビングショップ', 'Yokohama Diving Shop'); ?></p>
-            <?php if (d365_is_english()): ?>
-                <h1>Let’s dive<br> <em>together.</em></h1>
-            <?php else: ?>
-                <h1>一緒に、<br><em>海へ。</em></h1>
-            <?php endif; ?>
-            <p class="hero-copy"><?php d365_label('ひとりでの参加も、初めてのダイビングも。横浜から、少人数で海を楽しみませんか。', 'Joining solo or trying scuba for the first time? Come explore the ocean with a small group and a friendly dive team from Yokohama.'); ?></p>
-            <div class="hero-actions">
-                <a class="button" href="<?= function_exists('d365_show_booking') ? '#booking' : 'tel:+81452735496' ?>"><?php d365_label('ダイビングを予約', 'Book a dive'); ?> <span aria-hidden="true">↗</span></a>
-                <a class="button outline" href="<?= function_exists('d365_show_booking') ? '#calendar' : '#services' ?>"><?php d365_label('開催日程を見る', 'View calendar'); ?> <span aria-hidden="true">↓</span></a>
+        <div class="wrap hero-layout">
+            <div class="hero-content">
+                <p class="hero-location"><span aria-hidden="true"></span><?php d365_label('横浜・桜木町のダイビングショップ', 'Your dive shop in Yokohama'); ?></p>
+                <?php if (d365_is_english()): ?>
+                    <h1>Your first dive.<br><em>Let’s dive in.</em></h1>
+                <?php else: ?>
+                    <h1>はじめての海、<br><em>一緒に行こう。</em></h1>
+                <?php endif; ?>
+                <p class="hero-copy"><?php d365_label('初めての方も、おひとりでの参加も歓迎。横浜から、インストラクターと少人数で海へ出かけませんか？', 'New to scuba or coming on your own? Join our Yokohama team for a small-group dive with an instructor.'); ?></p>
+                <div class="hero-actions">
+                    <a class="button" href="<?= esc_url($trial_booking) ?>"><?php d365_label('体験ダイビングを予約', 'Book a beginner dive'); ?> <span aria-hidden="true">↗</span></a>
+                    <a class="button outline" href="#first-dive"><?php d365_label('初めての方へ', 'Your first dive'); ?> <span aria-hidden="true">↓</span></a>
+                </div>
+            </div>
+            <div class="hero-art">
+                <div class="hero-media">
+                    <img class="hero-image" src="<?= esc_url(d365_asset('hero.jpg')) ?>" alt="<?= esc_attr(d365_text('海に浮かんで手を振るダイビングの参加者', 'Divers wave from the water')); ?>" width="1900" height="1425" fetchpriority="high">
+                    <video class="hero-video" muted loop playsinline preload="none" aria-hidden="true" data-src="<?= esc_url(d365_asset('coast.mp4')) ?>"></video>
+                    <button type="button" hidden class="motion-toggle" data-play="<?= esc_attr(d365_text('動画を再生', 'Play video')) ?>" data-pause="<?= esc_attr(d365_text('動画を停止', 'Pause video')) ?>" aria-label="<?= esc_attr(d365_text('動画を再生', 'Play video')) ?>">▶</button>
+                </div>
+                <figure class="hero-michael">
+                    <img src="<?= esc_url(d365_asset('michael-diver.webp')) ?>" alt="<?= esc_attr(d365_text('C365ロゴのワッペンを胸につけたダイビング姿のマイケル', 'Michael in scuba gear with a C365 patch on his chest')); ?>" width="720" height="813" decoding="async">
+                    <figcaption><?php d365_label('案内役のマイケル', 'Meet Michael'); ?></figcaption>
+                </figure>
             </div>
         </div>
-        <button type="button" hidden class="motion-toggle" data-play="<?= esc_attr(d365_text('動画を再生', 'Play video')) ?>" data-pause="<?= esc_attr(d365_text('動画を停止', 'Pause video')) ?>" aria-label="<?= esc_attr(d365_text('動画を停止', 'Pause video')) ?>">Ⅱ</button>
-        <a class="hero-scroll" href="#services" aria-label="<?= esc_attr(d365_text('サービスへ移動', 'Explore diving services')) ?>">↓</a>
+    </section>
+    <section class="section first-steps" id="first-dive">
+        <div class="wrap">
+            <div class="section-heading steps-heading">
+                <h2><?php d365_label('海までの3ステップ', 'Three steps to your first dive'); ?></h2>
+                <?php if (function_exists('d365_show_booking')): ?>
+                    <a class="text-link" href="<?= esc_url(d365_experience_url('trial', d365_is_english())) ?>"><?php d365_label('料金・参加条件を見る', 'See prices and requirements'); ?> <span aria-hidden="true">↗</span></a>
+                <?php endif; ?>
+            </div>
+            <ol class="first-steps-grid">
+                <?php foreach ($steps as [$icon, $ja, $en, $ja_body, $en_body]): ?>
+                    <li>
+                        <img src="<?= esc_url(d365_asset('first-dive-' . $icon . '.webp')) ?>" alt="" width="112" height="112" loading="lazy">
+                        <div><h3><?= esc_html(d365_text($ja, $en)) ?></h3><p><?= esc_html(d365_text($ja_body, $en_body)) ?></p></div>
+                    </li>
+                <?php endforeach; ?>
+            </ol>
+        </div>
     </section>
     <section class="section services" id="services">
         <div class="wrap">
@@ -61,9 +96,9 @@ $news = get_posts(['post_type' => 'news', 'numberposts' => 4]);
         </div>
     </section>
     <?php if (function_exists('d365_show_booking')) { d365_show_booking(); } ?>
-    <section class="section first-dive" id="first-dive">
+    <section class="section first-dive" id="faq">
         <div class="wrap section-heading">
-            <h2><?php d365_label('初めての方へ', 'Your first dive'); ?></h2>
+            <h2><?php d365_label('初めての方からよくある質問', 'First-dive questions'); ?></h2>
             <div>
                 <details><summary><?php d365_label('初めてでも参加できますか？', 'Can I join if I’ve never dived before?'); ?></summary><p><?php d365_label('体験ダイビングは初めての方向けです。陸上で練習してから、インストラクターと一緒に入水します。', 'Discover Scuba Diving is designed for beginners. You’ll practice on land before entering the water with an instructor.'); ?></p></details>
                 <details><summary><?php d365_label('持ち物や参加条件はどこで確認できますか？', 'How do I find out what to bring and who can join?'); ?></summary><p><?php d365_label('スタッフが参加条件、当日の流れ、持ち物、体調チェックについて事前にご案内します。気になる点はお申し込み時にご相談ください。', 'Before the dive, our team will explain the requirements, what to bring, what to expect and the health check. Include any questions with your request.'); ?></p></details>
@@ -91,8 +126,8 @@ $news = get_posts(['post_type' => 'news', 'numberposts' => 4]);
             <div class="wrap">
                 <h2><?php d365_label('お知らせ', 'Shop news'); ?></h2>
                 <ul lang="ja">
-                    <?php foreach ($news as $post): ?>
-                        <li><time datetime="<?= esc_attr(get_the_date('Y-m-d', $post)) ?>"><?= esc_html(get_the_date('Y.m.d', $post)) ?></time> <a href="<?= esc_url(get_permalink($post)) ?>"><?= esc_html(get_the_title($post)) ?></a></li>
+                    <?php foreach ($news as $item): ?>
+                        <li><time datetime="<?= esc_attr(get_the_date('Y-m-d', $item)) ?>"><?= esc_html(get_the_date('Y.m.d', $item)) ?></time> <a href="<?= esc_url(get_permalink($item)) ?>"><?= esc_html(get_the_title($item)) ?></a></li>
                     <?php endforeach; ?>
                 </ul>
             </div>

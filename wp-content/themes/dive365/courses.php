@@ -8,7 +8,7 @@ $available = [
         '初めてCカードを取得する方向け。学科、限定水域でのスキル練習、4回の海洋実習を順に進めます。成人の認定後の最大水深は18mです。',
         'Earn your first scuba certification through knowledge development, confined-water practice and four open-water dives. The maximum depth for certified adult Open Water Divers is 18 m.',
         ['店舗参加条件は15歳以上', '目安は3〜4日', '講習料・施設・教材・器材レンタル・タンク・申請料込み'],
-        ['Dive 365 accepts participants aged 15 and above', 'Allow 3–4 days', 'Includes instruction, facility fees, materials, rental equipment, tanks and certification application fees'],
+        ['Diving Shop C365 accepts participants aged 15 and above', 'Allow 3–4 days', 'Includes instruction, facility fees, materials, rental equipment, tanks and certification application fees'],
         'https://www.padi.com/courses/open-water-diver',
     ],
     [
@@ -38,7 +38,7 @@ $options = [
     </div>
     <section class="section">
         <div class="wrap">
-            <h2><?php d365_label('Dive 365の講習', 'Courses at Dive 365'); ?></h2>
+            <h2><?php d365_label('Diving Shop C365の講習', 'Courses at Diving Shop C365'); ?></h2>
             <div class="course-grid">
                 <?php foreach ($available as [$id, $ja, $en, $price, $ja_body, $en_body, $ja_facts, $en_facts, $source]): ?>
                     <article class="course-card" id="<?= esc_attr($id) ?>">
@@ -50,7 +50,7 @@ $options = [
                     </article>
                 <?php endforeach; ?>
             </div>
-            <p class="course-note"><?php d365_label('参加前に健康チェックを行います。ショップでは60歳以上の方に医師の診断書をお願いしています。', 'We review your health questionnaire before training. Dive 365 requires a medical certificate for participants aged 60 and above.'); ?></p>
+            <p class="course-note"><?php d365_label('参加前に健康チェックを行います。ショップでは60歳以上の方に医師の診断書をお願いしています。', 'We review your health questionnaire before training. Diving Shop C365 requires a medical certificate for participants aged 60 and above.'); ?></p>
         </div>
     </section>
     <section class="section first-dive">

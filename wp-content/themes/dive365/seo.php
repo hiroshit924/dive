@@ -15,15 +15,15 @@ add_action('wp_head', static function (): void {
     $course = d365_is_courses();
     $english = d365_is_english();
     $description = $course
-        ? d365_text('横浜のDiving Shop C365でPADIのダイビング講習。オープン・ウォーター、アドヴァンスド講習の料金・参加条件と、次のスキルアップコースをご案内します。', 'Explore PADI scuba training at Dive 365 in Yokohama, including Open Water and Advanced Open Water courses, prices, requirements and skill progression.')
-        : d365_text('横浜・桜木町のダイビングショップ Dive 365。初めての体験ダイビング、PADIライセンス講習、逗子・葉山・伊豆のファンダイブ。開催日程と予約はこちら。', 'Dive 365 is a scuba diving shop in Yokohama offering beginner dives, PADI certification and guided dive trips in Zushi, Hayama and Izu. View dates and request a booking.');
+        ? d365_text('横浜のDiving Shop C365でPADIのダイビング講習。オープン・ウォーター、アドヴァンスド講習の料金・参加条件と、次のスキルアップコースをご案内します。', 'Explore PADI scuba training at Diving Shop C365 in Yokohama, including Open Water and Advanced Open Water courses, prices, requirements and skill progression.')
+        : d365_text('横浜・桜木町のダイビングショップ Diving Shop C365。初めての体験ダイビング、PADIライセンス講習、逗子・葉山・伊豆のファンダイブ。開催日程と予約はこちら。', 'Diving Shop C365 is a scuba diving shop in Yokohama offering beginner dives, PADI certification and guided dive trips in Zushi, Hayama and Izu. View dates and request a booking.');
     $experience = d365_experience();
     if ($experience === 'trial') {
-        $description = d365_text('横浜のDive 365で初めての体験ダイビング。料金、参加条件、持ち物を確認し、開催日程や希望日からお申し込みください。', 'Try scuba diving with Dive 365 in Yokohama. See what is included, check participation requirements and request a date.');
+        $description = d365_text('横浜のDiving Shop C365で初めての体験ダイビング。料金、参加条件、持ち物を確認し、開催日程や希望日からお申し込みください。', 'Try scuba diving with Diving Shop C365 in Yokohama. See what is included, check participation requirements and request a date.');
     } elseif ($experience === 'overseas') {
-        $description = d365_text('横浜のDive 365が不定期で開催する海外ダイビングツアー。パラオ、プーケット、サイパン、バリのダイビングポイントと開催相談をご案内します。', 'Explore dive sites in Palau, Phuket, Saipan and Bali. Dive 365 runs occasional overseas dive trips and takes inquiries from Yokohama.');
+        $description = d365_text('横浜のDiving Shop C365が不定期で開催する海外ダイビングツアー。パラオ、プーケット、サイパン、バリのダイビングポイントと開催相談をご案内します。', 'Explore dive sites in Palau, Phuket, Saipan and Bali. Diving Shop C365 runs occasional overseas dive trips and takes inquiries from Yokohama.');
     } elseif ($experience === 'tour') {
-        $description = d365_text('横浜のDive 365が案内する逗子・葉山・伊豆のファンダイブ。ツアー料金、器材レンタル、日程と予約をご案内します。', 'Join Dive 365 in Yokohama for guided dives in Zushi, Hayama and Izu. See trip prices, rental options and booking information.');
+        $description = d365_text('横浜のDiving Shop C365が案内する逗子・葉山・伊豆のファンダイブ。ツアー料金、器材レンタル、日程と予約をご案内します。', 'Join Diving Shop C365 in Yokohama for guided dives in Zushi, Hayama and Izu. See trip prices, rental options and booking information.');
     }
     $area_id = d365_tour_area();
     $area = $area_id ? d365_tour_destinations()[$area_id] : null;
@@ -38,10 +38,9 @@ add_action('wp_head', static function (): void {
         '@type' => 'SportsActivityLocation',
         '@id' => d365_home(false) . '#dive365-shop',
         'name' => 'Diving Shop C365',
-        'alternateName' => 'Dive 365',
         'url' => d365_home(false),
         'image' => d365_asset('shop-new.jpg'),
-        'logo' => d365_asset('logo-alt.png'),
+        'logo' => d365_asset('c365-brand.webp'),
         'telephone' => '+81-45-273-5496',
         'sport' => 'Scuba diving',
         'address' => [

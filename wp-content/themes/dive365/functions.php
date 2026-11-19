@@ -154,21 +154,21 @@ add_filter('language_attributes', static function (string $attributes): string {
 });
 add_filter('pre_get_document_title', static function (string $title): string {
     if (d365_is_courses()) {
-        return d365_text('PADI講習・スキルアップ｜Dive 365', 'PADI Courses & Skills | Dive 365');
+        return d365_text('PADI講習・スキルアップ｜Diving Shop C365', 'PADI Courses & Skills | Diving Shop C365');
     }
     if ($area = d365_tour_area()) {
         $name = d365_text(...d365_tour_destinations()[$area]['name']);
-        return $name . d365_text('のダイビングスポット｜Dive 365', ' Dive Spots | Dive 365');
+        return $name . d365_text('のダイビングスポット｜Diving Shop C365', ' Dive Spots | Diving Shop C365');
     }
     $titles = [
-        'trial' => d365_text('横浜から体験ダイビング｜Dive 365', 'Discover Scuba Diving from Yokohama | Dive 365'),
-        'overseas' => d365_text('海外ダイビングツアー｜パラオ・プーケット・サイパン・バリ｜Dive 365', 'Overseas Dive Trips to Palau, Phuket, Saipan & Bali | Dive 365'),
-        'tour' => d365_text('三浦・逗子・葉山・伊豆のダイビングツアー｜Dive 365', 'Miura, Zushi, Hayama & Izu Dive Trips | Dive 365'),
+        'trial' => d365_text('横浜から体験ダイビング｜Diving Shop C365', 'Discover Scuba Diving from Yokohama | Diving Shop C365'),
+        'overseas' => d365_text('海外ダイビングツアー｜パラオ・プーケット・サイパン・バリ｜Diving Shop C365', 'Overseas Dive Trips to Palau, Phuket, Saipan & Bali | Diving Shop C365'),
+        'tour' => d365_text('三浦・逗子・葉山・伊豆のダイビングツアー｜Diving Shop C365', 'Miura, Zushi, Hayama & Izu Dive Trips | Diving Shop C365'),
     ];
     if (isset($titles[d365_experience()])) {
         return $titles[d365_experience()];
     }
-    return is_front_page() ? d365_text('Dive 365｜横浜のダイビングショップ', 'Dive 365 | Scuba Diving in Yokohama') : $title;
+    return is_front_page() ? d365_text('Diving Shop C365｜横浜のダイビングショップ', 'Diving Shop C365 | Scuba Diving in Yokohama') : $title;
 });
 add_action('wp_head', static function (): void {
     if ((is_front_page() || d365_is_courses() || d365_experience()) && function_exists('d365_show_booking')) {
