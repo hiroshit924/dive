@@ -19,6 +19,9 @@ $trial_booking = function_exists('d365_show_booking')
     ? d365_home(d365_is_english(), ['dive_service' => 'trial']) . '#booking'
     : 'tel:+81452735496';
 $news = get_posts(['post_type' => 'news', 'numberposts' => 4]);
+$shop_map_query = '神奈川県横浜市中区福富町西通44-2 Speranza Sakuragicho 1F';
+$shop_map_embed = add_query_arg(['q' => rawurlencode($shop_map_query), 'output' => 'embed'], 'https://maps.google.com/maps');
+$shop_map_link = add_query_arg(['api' => '1', 'query' => rawurlencode($shop_map_query)], 'https://www.google.com/maps/search/');
 ?>
 <main id="main">
     <section class="hero">
@@ -149,10 +152,14 @@ $news = get_posts(['post_type' => 'news', 'numberposts' => 4]);
         <div class="wrap section-heading">
             <div>
                 <h2><?php d365_label('ショップ・アクセス', 'Find us in Yokohama'); ?></h2>
-                <address>Diving Shop C365<br><?php d365_label('神奈川県横浜市中区福富町西通44-2 Speranza Sakuragicho 1F', 'Speranza Sakuragicho 1F, 44-2 Fukutomicho Nishidori, Naka-ku, Yokohama, Kanagawa'); ?></address>
+                <address>Diving Shop C365<br><?php d365_label($shop_map_query, 'Speranza Sakuragicho 1F, 44-2 Fukutomicho Nishidori, Naka-ku, Yokohama, Kanagawa'); ?></address>
                 <p><a href="tel:+81452735496">045-273-5496</a></p>
                 <p><?php d365_label('10:00–17:00（日曜・月曜・祝日 定休）', '10:00–17:00. Closed Sundays, Mondays and public holidays.'); ?></p>
                 <?php get_template_part('template-parts/instagram', null, ['show_handle' => true]); ?>
+                <div class="access-map">
+                    <iframe src="<?= esc_url($shop_map_embed) ?>" title="<?= esc_attr(d365_text('Diving Shop C365の地図', 'Map of Diving Shop C365')) ?>" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+                    <a class="text-link" href="<?= esc_url($shop_map_link) ?>"><?php d365_label('Google マップで開く', 'Open in Google Maps'); ?> <span aria-hidden="true">↗</span></a>
+                </div>
             </div>
             <img src="<?= esc_url(d365_asset('shop-new.jpg')) ?>" alt="<?= esc_attr(d365_text('Diving Shop C365 店舗外観', 'Diving Shop C365 storefront')) ?>" width="640" height="420" loading="lazy">
         </div>
