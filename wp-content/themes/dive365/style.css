@@ -1,14 +1,14 @@
 /*
 Theme Name: Diving Shop C365
 Description: Bilingual diving shop theme for Diving Shop C365, Yokohama.
-Version: 1.5.0
+Version: 1.5.1
 Requires PHP: 8.1
 Text Domain: dive365
 */
 
 @font-face{
   font-family:"Zen Maru Gothic";
-  src:url("assets/zen-maru-hero.woff2") format("woff2");
+  src:url("assets/zen-maru-hero.woff2?v=2") format("woff2");
   font-weight:900;
   font-style:normal;
   font-display:swap;
@@ -288,3 +288,14 @@ details p{padding-top:.65rem}
 @media(max-width:640px){.michael-diary-card{grid-template-columns:1fr}}
 .reading article:has(.michael-diary-photo) > img{margin-block:1.25rem;border-radius:var(--radius)}
 .reading article:has(.michael-diary-photo) h2{font-size:clamp(1.45rem,3vw,2.25rem);letter-spacing:-.04em}
+
+.footer-links{display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+.footer-links a{margin:0}
+.instagram-link{display:inline-flex;align-items:center;gap:.5rem;font-weight:750;text-underline-offset:.22em}
+.instagram-icon{display:grid;place-items:center;flex:none;width:1.5rem;height:1.5rem;border-radius:.42rem;background:radial-gradient(circle at 25% 100%,#ea8150,#bb2c68 59%,#65349a)}
+.instagram-icon>span{position:relative;width:.95rem;height:.95rem;border:1.5px solid #fff;border-radius:.29rem}
+.instagram-icon>span::before,.instagram-icon>span::after{content:"";position:absolute;border-radius:50%}
+.instagram-icon>span::before{top:50%;left:50%;translate:-50% -50%;width:.44rem;height:.44rem;border:1.35px solid #fff}
+.instagram-icon>span::after{top:.11rem;right:.11rem;width:.12rem;height:.12rem;background:#fff}
+.access .instagram-link{margin-top:1.15rem}
+.instagram-handle{color:var(--muted);font-weight:600}

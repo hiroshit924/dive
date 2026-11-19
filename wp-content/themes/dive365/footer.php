@@ -4,9 +4,9 @@
             <img src="<?= esc_url(d365_asset('c365-deep-diving.webp')) ?>" alt="" width="50" height="53" loading="lazy">
             <span>Diving Shop <strong>C365</strong></span>
         </a>
-        <div>
+        <div class="footer-links">
             <?php if (function_exists('d365_show_booking')): ?><a href="<?= esc_url(d365_michael_url(d365_is_english())) ?>"><?php d365_label('マイケル君', 'Meet Michael'); ?></a><?php endif; ?>
-            <a href="https://www.instagram.com/c365_marine/">Instagram ↗</a>
+            <?php get_template_part('template-parts/instagram'); ?>
             <?php if (get_privacy_policy_url()): ?><a href="<?= esc_url(get_privacy_policy_url()) ?>"><?php d365_label('プライバシーポリシー', 'Privacy policy'); ?></a><?php endif; ?>
         </div>
         <small>© <?= esc_html(wp_date('Y')) ?> Diving Shop C365</small>

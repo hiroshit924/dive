@@ -16,10 +16,10 @@ add_action('wp_head', static function (): void {
     $english = d365_is_english();
     $description = $course
         ? d365_text('横浜のDiving Shop C365でPADIのダイビング講習。オープン・ウォーター、アドヴァンスド講習の料金・参加条件と、次のスキルアップコースをご案内します。', 'Explore PADI scuba training at Diving Shop C365 in Yokohama, including Open Water and Advanced Open Water courses, prices, requirements and skill progression.')
-        : d365_text('横浜・桜木町のダイビングショップ Diving Shop C365。初めての体験ダイビング、PADIライセンス講習、逗子・葉山・伊豆のファンダイブ。開催日程と予約はこちら。', 'Diving Shop C365 is a scuba diving shop in Yokohama offering beginner dives, PADI certification and guided dive trips in Zushi, Hayama and Izu. View dates and request a booking.');
+        : d365_text('横浜・桜木町のダイビングショップ Diving Shop C365。次のお休みに、逗子・葉山や伊豆の海へ。おひとりや初めての方も歓迎。体験ダイビング、PADI講習、ツアーの日程・予約をご案内します。', 'Based in Sakuragicho, Yokohama, Diving Shop C365 welcomes beginners and solo divers. Explore introductory dives, PADI courses and small-group trips to Zushi, Hayama and Izu.');
     $experience = d365_experience();
     if ($experience === 'trial') {
-        $description = d365_text('横浜のDiving Shop C365で初めての体験ダイビング。料金、参加条件、持ち物を確認し、開催日程や希望日からお申し込みください。', 'Try scuba diving with Diving Shop C365 in Yokohama. See what is included, check participation requirements and request a date.');
+        $description = d365_text('横浜のDiving Shop C365で初めての体験ダイビング。料金、参加条件、持ち物を確認し、開催日程や希望日からお申し込みください。', 'Try scuba diving with Diving Shop C365, based in Yokohama. See what is included, check participation requirements and request a date.');
     } elseif ($experience === 'overseas') {
         $description = d365_text('横浜のDiving Shop C365が不定期で開催する海外ダイビングツアー。パラオ、プーケット、サイパン、バリのダイビングポイントと開催相談をご案内します。', 'Explore dive sites in Palau, Phuket, Saipan and Bali. Diving Shop C365 runs occasional overseas dive trips and takes inquiries from Yokohama.');
     } elseif ($experience === 'tour') {
@@ -62,7 +62,7 @@ add_action('wp_head', static function (): void {
             'opens' => '10:00',
             'closes' => '17:00',
         ],
-        'sameAs' => ['https://www.instagram.com/c365_marine/'],
+        'sameAs' => [d365_instagram_url()],
     ];
     ?>
     <link rel="canonical" href="<?= esc_url($url) ?>">

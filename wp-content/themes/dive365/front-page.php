@@ -26,13 +26,13 @@ $news = get_posts(['post_type' => 'news', 'numberposts' => 4]);
             <div class="hero-content">
                 <p class="hero-location"><span aria-hidden="true"></span><?php d365_label('横浜・桜木町のダイビングショップ', 'Your dive shop in Yokohama'); ?></p>
                 <?php if (d365_is_english()): ?>
-                    <h1>Scuba diving<br><em>in Yokohama.</em></h1>
+                    <h1>Day off?<br><em>Let’s go diving.</em></h1>
                 <?php else: ?>
-                    <h1>横浜で、<br><em>ダイビング。</em></h1>
+                    <h1>次の休み、<br><em>海に潜ろう。</em></h1>
                 <?php endif; ?>
-                <p class="hero-copy"><?php d365_label('初めての体験ダイビングから、PADIライセンス講習、ファンダイブまで。横浜・桜木町から、少人数で海へ出かけましょう。おひとりでの参加も歓迎です。', 'Discover scuba, earn your PADI certification or join a guided dive trip. We run small groups from Sakuragicho, Yokohama, and welcome solo divers.'); ?></p>
+                <p class="hero-copy"><?php d365_label('仕事や授業から少し離れて、海の中でひと息。横浜・桜木町のショップが、逗子・葉山や伊豆の海へ少人数でご案内します。初めての方も、おひとりでの参加も歓迎です。', 'Take a break from work or classes and spend a little time underwater. Our dive shop in Sakuragicho, Yokohama, takes small groups to dive sites in Zushi, Hayama and Izu. First-time and solo divers are welcome.'); ?></p>
                 <div class="hero-actions">
-                    <a class="button" href="<?= esc_url($trial_booking) ?>"><?php d365_label('体験ダイビングを予約', 'Book a beginner dive'); ?> <span aria-hidden="true">↗</span></a>
+                    <a class="button" href="<?= esc_url($trial_booking) ?>"><?php d365_label('体験ダイビングを相談する', 'Ask about a first dive'); ?> <span aria-hidden="true">↗</span></a>
                     <a class="button outline" href="#first-dive"><?php d365_label('初めての方へ', 'Your first dive'); ?> <span aria-hidden="true">↓</span></a>
                 </div>
                 <?php if (function_exists('d365_show_booking')): ?>
@@ -153,6 +153,7 @@ $news = get_posts(['post_type' => 'news', 'numberposts' => 4]);
                 <address>Diving Shop C365<br><?php d365_label('神奈川県横浜市中区福富町西通44-2 Speranza Sakuragicho 1F', 'Speranza Sakuragicho 1F, 44-2 Fukutomicho Nishidori, Naka-ku, Yokohama, Kanagawa'); ?></address>
                 <p><a href="tel:+81452735496">045-273-5496</a></p>
                 <p><?php d365_label('10:00–17:00（日曜・月曜・祝日 定休）', '10:00–17:00. Closed Sundays, Mondays and public holidays.'); ?></p>
+                <?php get_template_part('template-parts/instagram', null, ['show_handle' => true]); ?>
             </div>
             <img src="<?= esc_url(d365_asset('shop-new.jpg')) ?>" alt="<?= esc_attr(d365_text('Diving Shop C365 店舗外観', 'Diving Shop C365 storefront')) ?>" width="640" height="420" loading="lazy">
         </div>

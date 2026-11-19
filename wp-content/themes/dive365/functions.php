@@ -19,6 +19,10 @@ function d365_asset(string $file): string {
     return get_theme_file_uri('assets/' . $file);
 }
 
+function d365_instagram_url(): string {
+    return 'https://www.instagram.com/c365_marine/';
+}
+
 function d365_label(string $ja, string $en): void {
     echo esc_html(d365_text($ja, $en));
 }
@@ -188,7 +192,7 @@ add_filter('pre_get_document_title', static function (string $title): string {
     if (isset($titles[d365_experience()])) {
         return $titles[d365_experience()];
     }
-    return is_front_page() ? d365_text('Diving Shop C365｜横浜のダイビングショップ', 'Diving Shop C365 | Scuba Diving in Yokohama') : $title;
+    return is_front_page() ? d365_text('Diving Shop C365｜横浜のダイビングショップ', 'Diving Shop C365 | Dive Shop in Yokohama') : $title;
 });
 add_action('wp_head', static function (): void {
     if ((is_front_page() || d365_is_michael() || d365_is_courses() || d365_experience()) && function_exists('d365_show_booking')) {
