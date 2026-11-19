@@ -24,12 +24,6 @@ foreach ($sessions as $session) {
     }
 }
 $session_link = static fn (int $id): string => d365_home($english, ['dive_month' => $month, 'dive_session' => $id]) . '#booking';
-$feedback = [
-    'received' => d365_text('予約リクエストを受け付けました。スタッフからのご連絡をお待ちください。', 'We received your request. Our team will contact you to confirm availability.'),
-    'invalid' => d365_text('入力内容を確認して、もう一度お試しください。', 'Please check your details and try again.'),
-    'closed' => d365_text('この日程は受付を終了しました。別の日程をお選びください。', 'This session is closed. Please select another date.'),
-    'error' => d365_text('送信できませんでした。時間をおいて再度お試しください。', 'Your request could not be saved. Please try again shortly.'),
-];
 $result = d365_input($_GET, 'booking');
 if ($result === '' && $requested_session !== '' && !$chosen_session) {
     $result = 'closed';
@@ -111,11 +105,7 @@ if ($result === '' && $requested_session !== '' && !$chosen_session) {
             <p><a href="tel:+81452735496">045-273-5496</a></p>
         </div>
         <div>
-            <?php if (isset($feedback[$result])): ?>
-                <p class="form-notice <?= $result === 'received' ? 'success' : 'error' ?>" role="status"><?= esc_html($feedback[$result]) ?></p>
-            <?php endif; ?>
-
-                <form class="d365-booking-form" method="post" action="<?= esc_url(admin_url('admin-post.php')) ?>">
+                <form class="d365-booking-form" method="post" action="<?= esc_url(admin_url('admin-post.php')) ?>" data-submit-error="<?= esc_attr(d365_text('送信結果を確認できませんでした。再送する前にショップへお問い合わせください。', 'We couldn’t verify the result. Contact the shop before sending another request.')) ?>">
                     <input type="hidden" name="action" value="d365_book">
                     <input type="hidden" name="language" value="<?= $english ? 'en' : 'ja' ?>">
                     <?php wp_nonce_field('d365_book', 'd365_nonce', false); ?>
@@ -154,6 +144,7 @@ if ($result === '' && $requested_session !== '' && !$chosen_session) {
                             <?php if (get_privacy_policy_url()): ?> <a href="<?= esc_url(get_privacy_policy_url()) ?>"><?= esc_html(d365_text('プライバシーポリシー', 'Privacy policy')) ?></a><?php endif; ?>
                         </span>
                     </label>
+                    <p class="form-notice <?= $result === 'received' ? 'success' : 'error' ?>" role="status" tabindex="-1"><?= esc_html(d365_booking_feedback($result, $english)) ?></p>
                     <button class="button" type="submit"><?= esc_html(d365_text('予約リクエストを送信', 'Send booking request')) ?> <span aria-hidden="true">→</span></button>
                 </form>
         </div>

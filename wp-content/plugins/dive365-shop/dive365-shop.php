@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Dive 365 Shop
  * Description: Bilingual calendar, booking requests and emails, and legacy post type support.
- * Version: 1.5.0
+ * Version: 1.5.1
  * Requires PHP: 8.1
  */
 
@@ -275,9 +275,22 @@ add_action('manage_d365_session_posts_custom_column', static function (string $c
 
 add_action('admin_post_nopriv_d365_book', 'd365_submit_booking');
 add_action('admin_post_d365_book', 'd365_submit_booking');
+function d365_booking_feedback(string $result, bool $english): string {
+    $messages = [
+        'received' => ['予約リクエストを受け付けました。スタッフからのご連絡をお待ちください。', 'We received your request. Our team will contact you to confirm availability.'],
+        'invalid' => ['入力内容を確認して、もう一度お試しください。', 'Please check your details and try again.'],
+        'closed' => ['この日程は受付を終了しました。別の日程をお選びください。', 'This session is closed. Please select another date.'],
+        'error' => ['送信できませんでした。時間をおいて再度お試しください。', 'Your request could not be saved. Please try again shortly.'],
+    ];
+    return $messages[$result][$english ? 1 : 0] ?? '';
+}
+
 function d365_submit_booking(): void {
     $english = d365_input($_POST, 'language') === 'en';
     $result = d365_record_booking($_POST, $english);
+    if (d365_input($_POST, 'd365_response') === 'json') {
+        wp_send_json(['result' => $result, 'message' => d365_booking_feedback($result, $english)]);
+    }
     wp_safe_redirect(d365_home($english, ['booking' => $result]) . '#booking', 303);
     exit;
 }

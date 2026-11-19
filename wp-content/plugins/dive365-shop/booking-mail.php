@@ -2,19 +2,48 @@
 defined('ABSPATH') || exit;
 
 function d365_send_booking_mail(int $id, string $kind): void {
+    $name = (string) get_post_meta($id, '_d365_name', true);
+    $email = (string) get_post_meta($id, '_d365_email', true);
+    $english = $kind !== 'staff' && get_post_meta($id, '_d365_language', true) === 'English';
+    $service = (string) get_post_meta($id, '_d365_service', true);
+    $session = (string) get_post_meta($id, '_d365_session_title', true);
+    $date = (string) get_post_meta($id, '_d365_session_date', true);
+    $tour_location = (string) get_post_meta($id, '_d365_tour_location', true);
+    $people = (int) get_post_meta($id, '_d365_people', true);
+
+    $details = [($english ? 'Inquiry topic: ' : 'ご相談内容：') . (d365_services($english)[$service] ?? $service)];
+    if ($session !== '') {
+        $details[] = ($english ? 'Requested session: ' : '申込日程：') . $session;
+    }
+    if ($date !== '') {
+        $details[] = ($english ? 'Requested date (Japan time): ' : '希望日（日本時間）：') . $date;
+    }
+    if ($tour_location !== '') {
+        $details[] = ($english ? 'Preferred destination: ' : '行ってみたい場所：') . $tour_location;
+    }
+    $details[] = ($english ? 'Guests: ' : '参加人数：') . $people;
+
+    $headers = ['From: Diving Shop C365 <dive@c365.jp>'];
     if ($kind === 'staff') {
         $recipient = (string) get_option('admin_email');
         $subject = '【Diving Shop C365】新しいダイビング予約リクエスト';
+        $notes = (string) get_post_meta($id, '_d365_message', true);
+        $language = (string) get_post_meta($id, '_d365_language', true);
         $body = "ダイビング予約リクエストを受け付けました。\n\n"
-            . "WordPress管理画面で申請内容を確認してください。\n"
-            . admin_url('post.php?post=' . $id . '&action=edit');
+            . "【申請内容】\nお名前：$name\nメールアドレス：$email\n言語：$language\n"
+            . implode("\n", $details)
+            . "\n\n【連絡事項】\n" . ($notes !== '' ? $notes : '記入なし')
+            . "\n\nWordPress管理画面で申請を開く\n" . admin_url('post.php?post=' . $id . '&action=edit');
+        if (is_email($email)) {
+            $headers[] = 'Reply-To: ' . $email;
+        }
     } else {
-        $recipient = (string) get_post_meta($id, '_d365_email', true);
-        $english = get_post_meta($id, '_d365_language', true) === 'English';
+        $recipient = $email;
+        $headers[] = 'Reply-To: dive@c365.jp';
         $copy = [
             'received' => [
                 ['予約リクエストを受け付けました', 'We received your booking request'],
-                ['スタッフが日程と空き状況を確認し、ご連絡します。', 'Our team will check availability and contact you to confirm your booking.'],
+                ['このたびは、Diving Shop C365へお申し込みいただき、誠にありがとうございます。下記の内容で予約リクエストを承りました。スタッフが日程や空き状況を確認し、ご入力いただいたメールアドレスへ改めてご案内いたします。ご予約は確定のご連絡をもって成立します。', 'Thank you for contacting Diving Shop C365. We have received the booking request below. Our team will check the details and availability, then contact you at the email address you provided. Your booking is confirmed once you receive our confirmation.'],
             ],
             'confirmed' => [
                 ['ご予約が確定しました', 'Your booking is confirmed'],
@@ -32,28 +61,17 @@ function d365_send_booking_mail(int $id, string $kind): void {
         [$title, $message] = $copy[$kind];
         $locale = $english ? 1 : 0;
         $subject = 'Diving Shop C365 | ' . $title[$locale];
-        $name = (string) get_post_meta($id, '_d365_name', true);
-        $service = (string) get_post_meta($id, '_d365_service', true);
-        $session = (string) get_post_meta($id, '_d365_session_title', true);
-        $date = (string) get_post_meta($id, '_d365_session_date', true);
-        $tour_location = (string) get_post_meta($id, '_d365_tour_location', true);
-        $people = (int) get_post_meta($id, '_d365_people', true);
-        $body = $english ? "Hi $name," : "$name 様";
+        $body = $english ? "Dear $name," : "$name 様";
         $body .= "\n\n" . $message[$locale];
-        $body .= "\n\n" . ($english ? 'Inquiry topic: ' : 'ご相談内容：') . (d365_services($english)[$service] ?? $service);
-        if ($tour_location !== '') {
-            $body .= "\n" . ($english ? 'Preferred destination: ' : '行ってみたい場所：') . $tour_location;
+        $body .= "\n\n" . ($english ? 'Your request' : '【お申し込み内容】') . "\n" . implode("\n", $details);
+        if ($kind === 'received') {
+            $body .= "\n\n" . ($english
+                ? 'If you would like to change any details or have a question before your dive, please reply to this email. We look forward to hearing from you.'
+                : 'お申し込み内容の変更やご不明点がございましたら、このメールにご返信ください。スタッフ一同、海でお会いできることを楽しみにしております。');
         }
-        if ($session !== '') {
-            $body .= "\n" . ($english ? 'Requested session: ' : '申込日程：') . $session;
-        }
-        if ($date !== '') {
-            $body .= "\n" . ($english ? 'Requested date (Japan time): ' : '申込時の日付（日本時間）：') . $date;
-        }
-        $body .= "\n" . ($english ? 'Guests: ' : '参加人数：') . $people;
-        $body .= "\n\nDiving Shop C365\n045-273-5496";
+        $body .= "\n\nDiving Shop C365\ndive@c365.jp\n045-273-5496";
     }
 
-    $sent = is_email($recipient) && wp_mail($recipient, $subject, $body);
+    $sent = is_email($recipient) && wp_mail($recipient, $subject, $body, $headers);
     update_post_meta($id, '_d365_mail_' . $kind, $sent ? 'sent' : 'failed');
 }

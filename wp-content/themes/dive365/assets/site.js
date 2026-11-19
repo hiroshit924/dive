@@ -72,3 +72,36 @@ if (tourLocationGroup) {
     window.addEventListener('pageshow', updateTourLocation);
     updateTourLocation();
 }
+
+if (booking?.dataset.submitError && window.fetch) {
+    const notice = booking.querySelector('.form-notice');
+    const button = booking.querySelector('button[type="submit"]');
+    booking.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        if (button.disabled) {
+            return;
+        }
+
+        const fields = new FormData(booking);
+        fields.set('d365_response', 'json');
+        button.disabled = true;
+        let accepted = false;
+
+        try {
+            const response = await fetch(booking.getAttribute('action'), {method: 'POST', body: fields, mode: 'same-origin'});
+            const {result, message} = await response.json();
+            if (!response.ok || typeof message !== 'string' || !message) {
+                throw new Error('Missing booking result');
+            }
+            accepted = result === 'received';
+            notice.textContent = message;
+        } catch {
+            notice.textContent = booking.dataset.submitError;
+        } finally {
+            notice.classList.toggle('success', accepted);
+            notice.classList.toggle('error', !accepted);
+            button.disabled = accepted;
+            notice.focus({preventScroll: true});
+        }
+    });
+}
