@@ -26,15 +26,22 @@ $news = get_posts(['post_type' => 'news', 'numberposts' => 4]);
             <div class="hero-content">
                 <p class="hero-location"><span aria-hidden="true"></span><?php d365_label('横浜・桜木町のダイビングショップ', 'Your dive shop in Yokohama'); ?></p>
                 <?php if (d365_is_english()): ?>
-                    <h1>Your first dive.<br><em>Let’s dive in.</em></h1>
+                    <h1>Scuba diving<br><em>in Yokohama.</em></h1>
                 <?php else: ?>
-                    <h1>はじめての海、<br><em>一緒に行こう。</em></h1>
+                    <h1>横浜で、<br><em>ダイビング。</em></h1>
                 <?php endif; ?>
-                <p class="hero-copy"><?php d365_label('初めての方も、おひとりでの参加も歓迎。横浜から、インストラクターと少人数で海へ出かけませんか？', 'New to scuba or coming on your own? Join our Yokohama team for a small-group dive with an instructor.'); ?></p>
+                <p class="hero-copy"><?php d365_label('初めての体験ダイビングから、PADIライセンス講習、ファンダイブまで。横浜・桜木町から、少人数で海へ出かけましょう。おひとりでの参加も歓迎です。', 'Discover scuba, earn your PADI certification or join a guided dive trip. We run small groups from Sakuragicho, Yokohama, and welcome solo divers.'); ?></p>
                 <div class="hero-actions">
                     <a class="button" href="<?= esc_url($trial_booking) ?>"><?php d365_label('体験ダイビングを予約', 'Book a beginner dive'); ?> <span aria-hidden="true">↗</span></a>
                     <a class="button outline" href="#first-dive"><?php d365_label('初めての方へ', 'Your first dive'); ?> <span aria-hidden="true">↓</span></a>
                 </div>
+                <?php if (function_exists('d365_show_booking')): ?>
+                    <ul class="hero-services">
+                        <li><a href="<?= esc_url(d365_experience_url('trial', d365_is_english())) ?>"><?php d365_label('体験ダイビング', 'Discover scuba'); ?></a></li>
+                        <li><a href="<?= esc_url(d365_courses_url(d365_is_english())) ?>"><?php d365_label('PADI講習', 'PADI courses'); ?></a></li>
+                        <li><a href="<?= esc_url(d365_experience_url('tour', d365_is_english())) ?>"><?php d365_label('ツアー', 'Dive trips'); ?></a></li>
+                    </ul>
+                <?php endif; ?>
             </div>
             <div class="hero-art">
                 <div class="hero-media">

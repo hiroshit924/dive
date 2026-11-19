@@ -61,3 +61,16 @@ docker compose exec -T --user www-data wordpress php /tmp/wp-cli.phar --path=/va
 
 - 公開サイトと検索メタデータの店名は `Diving Shop C365` です。本番に既存のDBを復元した際は、WordPressの「設定 → 一般」でサイトのタイトルも揃えてください。マイケル君と初めての方向けの3ステップをトップに掲載しています。キャラクター紹介は日英の `/michael/` と `/en/michael/` にあります。既存の縦型ロゴはヘッダー、マスクとフィンのロゴはフッターに使っています。
 - マイケルと各イラストはテーマの `assets/` にWebPで保存しています。見出しの一部は自己ホストの Zen Maru Gothic を使用しています。フォントのライセンスは同じディレクトリにあります。
+
+### マイケル君の海日記
+
+海日記は通常のダイビングブログとして登録されます。別のWordPressへ反映する場合は、サイトのバックアップを移すか、対象サイトで公開を確認した上で以下の手順で記事と4枚の画像を登録します。
+
+```bash
+docker compose exec -T wordpress mkdir -p /tmp/d365-diary-content
+docker compose cp content/michael-diary/. wordpress:/tmp/d365-diary-content/
+docker compose cp scripts/import-michael-diary.php wordpress:/tmp/d365-import-diary.php
+docker compose exec -T wordpress chmod -R a+rX /tmp/d365-import-diary.php /tmp/d365-diary-content
+docker compose exec -T --user www-data wordpress php /tmp/wp-cli.phar --path=/var/www/html \
+  eval-file /tmp/d365-import-diary.php /tmp/d365-diary-content
+```
