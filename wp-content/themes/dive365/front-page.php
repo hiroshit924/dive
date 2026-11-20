@@ -33,7 +33,7 @@ $shop_map_link = add_query_arg(['api' => '1', 'query' => rawurlencode($shop_map_
                 <?php else: ?>
                     <h1>次の休み、<br><em>海に潜ろう。</em></h1>
                 <?php endif; ?>
-                <p class="hero-copy"><?php d365_label('仕事や授業から少し離れて、海の中でひと息。横浜・桜木町のショップが、逗子・葉山や伊豆の海へ少人数でご案内します。初めての方も、おひとりでの参加も歓迎です。', 'Take a break from work or classes and spend a little time underwater. Our dive shop in Sakuragicho, Yokohama, takes small groups to dive sites in Zushi, Hayama and Izu. First-time and solo divers are welcome.'); ?></p>
+                <p class="hero-copy"><?php d365_label('仕事や授業から少し離れて、海の中でひと息。横浜・桜木町のショップが、逗子・葉山・城ヶ島や伊豆の海へ少人数でご案内します。初めての方も、おひとりでの参加も歓迎です。', 'Take a break from work or classes and spend a little time underwater. Our dive shop in Sakuragicho, Yokohama, takes small groups to dive sites in Zushi, Hayama, Jogashima and Izu. First-time and solo divers are welcome.'); ?></p>
                 <div class="hero-actions">
                     <a class="button" href="<?= esc_url($trial_booking) ?>"><?php d365_label('体験ダイビングを相談する', 'Ask about a first dive'); ?> <span aria-hidden="true">↗</span></a>
                     <a class="button outline" href="#first-dive"><?php d365_label('初めての方へ', 'Your first dive'); ?> <span aria-hidden="true">↓</span></a>

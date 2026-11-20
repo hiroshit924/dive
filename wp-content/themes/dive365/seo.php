@@ -16,14 +16,14 @@ add_action('wp_head', static function (): void {
     $english = d365_is_english();
     $description = $course
         ? d365_text('横浜のDiving Shop C365でPADIのダイビング講習。初めてのCカードから、アドヴァンスド、スペシャルティ、レスキューまで。料金・参加条件・講習の流れを比較できます。', 'Explore PADI scuba training at Diving Shop C365 in Yokohama, including Open Water and Advanced Open Water courses, prices, requirements and skill progression.')
-        : d365_text('横浜・桜木町のダイビングショップ Diving Shop C365。次のお休みに、逗子・葉山や伊豆の海へ。おひとりや初めての方も歓迎。体験ダイビング、PADI講習、ツアーの日程・予約をご案内します。', 'Based in Sakuragicho, Yokohama, Diving Shop C365 welcomes beginners and solo divers. Explore introductory dives, PADI courses and small-group trips to Zushi, Hayama and Izu.');
+        : d365_text('横浜・桜木町のダイビングショップ Diving Shop C365。次のお休みに、逗子・葉山・城ヶ島や伊豆の海へ。おひとりや初めての方も歓迎。体験ダイビング、PADI講習、ツアーの日程・予約をご案内します。', 'Based in Sakuragicho, Yokohama, Diving Shop C365 welcomes beginners and solo divers. Explore introductory dives, PADI courses and small-group trips to Zushi, Hayama, Jogashima and Izu.');
     $experience = d365_experience();
     if ($experience === 'trial') {
         $description = d365_text('横浜のDiving Shop C365から初めての体験ダイビングへ。マイケル君と写真で当日の流れを確認。器材込み18,000円、持ち物、参加条件、日程相談をご案内します。', 'Plan your first scuba dive with Diving Shop C365 in Yokohama. Follow Michael’s photo guide, check eligibility and what to pack, and ask for a date. Equipment included, ¥18,000 per person.');
     } elseif ($experience === 'overseas') {
         $description = d365_text('横浜のDiving Shop C365が不定期で開催する海外ダイビングツアー。パラオ、プーケット、サイパン、バリのダイビングポイントと開催相談をご案内します。', 'Explore dive sites in Palau, Phuket, Saipan and Bali. Diving Shop C365 runs occasional overseas dive trips and takes inquiries from Yokohama.');
     } elseif ($experience === 'tour') {
-        $description = d365_text('横浜のDiving Shop C365が案内する逗子・葉山・伊豆・初島のファンダイブ。ツアー料金、器材レンタル、日程と予約をご案内します。', 'Join Diving Shop C365 in Yokohama for guided dives in Zushi, Hayama, Izu and Hatsushima. See trip prices, rental options and booking information.');
+        $description = d365_text('横浜のDiving Shop C365が案内する逗子・葉山・城ヶ島、伊豆、初島・熱海のファンダイブ。ツアー料金、器材レンタル、日程と予約をご案内します。', 'Join Diving Shop C365 in Yokohama for guided dives in Zushi, Hayama, Jogashima, Izu, Hatsushima and Atami. See trip prices, rental options and booking information.');
     }
     $area_id = d365_tour_area();
     $area = $area_id ? d365_tour_destinations()[$area_id] : null;

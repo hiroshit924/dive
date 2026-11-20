@@ -142,7 +142,7 @@ add_filter('d365_booking_tour_location_default', static function (string $locati
         return d365_text(...$overseas['name']);
     }
     foreach (d365_tour_destinations() as $id => $area) {
-        $place = $destination === $id ? $area : ($area['spots'][$destination] ?? null);
+        $place = $destination === ($area['booking_destination'] ?? $id) ? $area : ($area['spots'][$destination] ?? null);
         if ($place) {
             return d365_text(...$place['name']);
         }
@@ -257,7 +257,7 @@ add_filter('pre_get_document_title', static function (string $title): string {
     $titles = [
         'trial' => d365_text('横浜から体験ダイビング｜Diving Shop C365', 'Discover Scuba Diving from Yokohama | Diving Shop C365'),
         'overseas' => d365_text('海外ダイビングツアー｜パラオ・プーケット・サイパン・バリ｜Diving Shop C365', 'Overseas Dive Trips to Palau, Phuket, Saipan & Bali | Diving Shop C365'),
-        'tour' => d365_text('三浦・逗子・葉山・伊豆・初島のダイビングツアー｜Diving Shop C365', 'Miura, Zushi, Hayama, Izu & Hatsushima Dive Trips | Diving Shop C365'),
+        'tour' => d365_text('逗子・葉山・城ヶ島・伊豆・初島・熱海のダイビングツアー｜Diving Shop C365', 'Zushi, Hayama, Jogashima, Izu, Hatsushima & Atami Dive Trips | Diving Shop C365'),
     ];
     if (isset($titles[d365_experience()])) {
         return $titles[d365_experience()];

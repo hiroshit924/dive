@@ -4,7 +4,7 @@ defined('ABSPATH') || exit;
 function d365_tour_destinations(): array {
     return [
         'miura-zushi-hayama' => [
-            'name' => ['三浦・逗子・葉山', 'Miura, Zushi & Hayama'],
+            'name' => ['逗子・葉山・城ヶ島', 'Zushi, Hayama & Jogashima'],
             'headline' => ['週末は、神奈川の海へ。', 'A weekend on the Kanagawa coast.'],
             'description' => [
                 '城ヶ島の入り組んだ岩場、小坪沖の華やかな魚群、葉山の浅瀬。近場の海で、今日の「見たい」を見つけよう。',
@@ -142,6 +142,39 @@ function d365_tour_destinations(): array {
                     ],
                     'point' => [34.57504, 138.94193],
                 ],
+            ],
+        ],
+        'hatsushima' => [
+            'name' => ['初島・熱海', 'Hatsushima & Atami'],
+            'booking_destination' => 'hatsushima-atami',
+            'headline' => ['初島の岩礁、熱海の沈船。', 'Reefs off Hatsushima, wreck diving in Atami.'],
+            'description' => [
+                '初島では岸から海に入り、岩礁や砂地で季節の生き物を探します。熱海ではボートで沖へ出て、魚の群れが集まる沈船や岩礁を潜ります。',
+                'Explore rocky reefs and sandy seabeds on a shore dive off Hatsushima, or take a boat out from Atami to dive reefs and look for schools of fish around the wreck.',
+            ],
+            'photo' => 'tour-hatsushima.webp',
+            'photo_caption' => ['沖から見た初島', 'Hatsushima from the water'],
+            'access' => [
+                '横浜の Diving Shop C365 に集合し、無料送迎で熱海へ。熱海で潜る場合は現地でダイビングボートに乗り、初島で潜る場合は熱海港から約30分の定期船で初島港へ渡ります。',
+                'Meet at Diving Shop C365 in Yokohama for the free shuttle to Atami. For Atami dives, board the dive boat locally. For Hatsushima, take the ferry from Atami Port to the island, about 30 minutes away.',
+            ],
+            'access_url' => 'https://www.hatsushima.jp/access/',
+            'map_url' => 'https://www.google.com/maps/search/?api=1&query=Hatsushima%2C%20Atami',
+            'spots' => [
+                'hatsushima' => [
+                    'name' => ['初島', 'Hatsushima'], 'location' => ['静岡県熱海市', 'Atami, Shizuoka'],
+                    'feature' => ['ビーチ・岩礁と砂地', 'Shore diving, reef & sand'],
+                    'photo' => 'tour-hatsushima.webp',
+                    'description' => [
+                        '代表的なビーチポイントのフタツネでは、岩場を行き来する魚の群れを眺めたり、岩のすき間や砂地にいる生き物を探したりできます。',
+                        'At Futatsune, one of the island’s main shore dive sites, watch schools of fish move over the rocks and look for smaller creatures in crevices and across the sand.',
+                    ],
+                    'highlights' => [
+                        '同じポイントでも、季節や潮で出会う生き物が変わります。魚の群れを広く眺めたい方も、水中写真を撮りながらゆっくり巡りたい方も、ご希望をお聞かせください。潜る場所や深さは、当日の海況と経験に合わせてご案内します。',
+                        'What you see varies with the season and the tide. Let us know if you’d like to look for schools of fish or take your time with underwater photography. We’ll choose the site and depth according to sea conditions and your experience.',
+                    ],
+                    'point' => [35.0403, 139.1695], 'offset' => [12, 0],
+                ],
                 'atami' => [
                     'name' => ['熱海', 'Atami'], 'location' => ['静岡県熱海市', 'Atami, Shizuoka'],
                     'feature' => ['沈船・ボート', 'Wreck & boat diving'], 'photo' => 'tour-atami.webp',
@@ -154,43 +187,6 @@ function d365_tour_destinations(): array {
                         'The wreck of the Asahi Maru No. 16 was about 81 meters long. Its scale becomes clear as the outline comes into view. Fish around the wreck and soft corals on rocky sites offer very different sights. Ask which fits your certification, experience and depth range.',
                     ],
                     'point' => [35.09433, 139.07947],
-                ],
-            ],
-        ],
-        'hatsushima' => [
-            'name' => ['初島', 'Hatsushima'],
-            'headline' => ['船で渡る、初島の海。', 'Dive off the island of Hatsushima.'],
-            'description' => [
-                '熱海港から定期船で約30分。初島の岸から海に入り、岩礁と砂地を巡りながら、季節の魚や小さな生き物を探すファンダイブです。',
-                'Take a 30-minute ferry from Atami Port for a shore dive off Hatsushima. Explore rocky reefs and sandy seabeds for seasonal fish and smaller marine life.',
-            ],
-            'photo' => 'tour-hatsushima.webp',
-            'photo_caption' => ['沖から見た初島', 'Hatsushima from the water'],
-            'access' => [
-                '横浜の Diving Shop C365 に集合し、無料送迎で熱海港へ。熱海港から定期船に乗り、初島港へ渡ります。運航状況に応じた当日の流れは、ショップからご案内します。',
-                'Meet at Diving Shop C365 in Yokohama for the free shuttle to Atami Port, then take the ferry to Hatsushima. We’ll confirm the day’s plans based on the ferry schedule and service conditions.',
-            ],
-            'access_url' => 'https://www.hatsushima.jp/access/',
-            'map_url' => 'https://www.google.com/maps/search/?api=1&query=Hatsushima%2C%20Atami',
-            'spots' => [
-                'hatsushima' => [
-                    'name' => ['初島', 'Hatsushima'], 'location' => ['静岡県熱海市', 'Atami, Shizuoka'],
-                    'feature' => ['ビーチ・岩礁と砂地', 'Shore diving, reef & sand'],
-                    'photo' => 'tour-hatsushima-coast.webp',
-                    'photo_credit' => [
-                        'name' => 'John Carkeet',
-                        'source' => 'https://commons.wikimedia.org/wiki/File:Hatsushima_(19414146744).jpg',
-                        'license' => 'https://creativecommons.org/licenses/by/2.0/',
-                    ],
-                    'description' => [
-                        '代表的なビーチポイントのフタツネでは、岩場を行き来する魚の群れを眺めたり、岩のすき間や砂地にいる生き物を探したりできます。',
-                        'At Futatsune, one of the island’s main shore dive sites, watch schools of fish move over the rocks and look for smaller creatures in crevices and across the sand.',
-                    ],
-                    'highlights' => [
-                        '同じポイントでも、季節や潮で出会う生き物が変わります。魚の群れを広く眺めたい方も、水中写真を撮りながらゆっくり巡りたい方も、ご希望をお聞かせください。潜る場所や深さは、当日の海況と経験に合わせてご案内します。',
-                        'What you see varies with the season and the tide. Let us know if you’d like to look for schools of fish or take your time with underwater photography. We’ll choose the site and depth according to sea conditions and your experience.',
-                    ],
-                    'point' => [35.0403, 139.1695], 'offset' => [12, 0],
                 ],
             ],
         ],
