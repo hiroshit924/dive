@@ -16,6 +16,7 @@ $tour_url = d365_experience_url('tour', $english);
                     <p class="tour-kicker"><?= esc_html(d365_text(...$area['name'])) ?></p>
                     <h1><?= esc_html(d365_text(...$area['headline'])) ?></h1>
                     <p class="tour-intro"><?= esc_html(d365_text(...$area['description'])) ?></p>
+                    <?php get_template_part('template-parts/tour-pickup'); ?>
                     <div class="tour-actions">
                         <a class="button" href="#spots"><?php d365_label('スポットを見る', 'Explore dive spots'); ?> <span aria-hidden="true">↓</span></a>
                         <a class="text-link" href="<?= esc_url($tour_url . '#tour-map') ?>"><?php d365_label('地図を見る', 'View map'); ?> <span aria-hidden="true">↗</span></a>
@@ -24,6 +25,7 @@ $tour_url = d365_experience_url('tour', $english);
                     <p class="tour-kicker"><?php d365_label('横浜発のファンダイブツアー', 'Fun dives from Yokohama'); ?></p>
                     <h1><?php d365_label('週末、どの海へ行こう。', 'Where shall we dive this weekend?'); ?></h1>
                     <p class="tour-intro"><?php d365_label('近場の海で小さな生き物を探したり、伊豆で魚の群れに出会ったり。次に潜ってみたい海を、ここから見つけよう。', 'Look for tiny marine life close to home or find yourself surrounded by fish in Izu. Your next favorite dive starts here.'); ?></p>
+                    <?php get_template_part('template-parts/tour-pickup'); ?>
                     <div class="tour-actions">
                         <a class="button" href="#tour-map"><?php d365_label('地図で行き先を探す', 'Explore the map'); ?> <span aria-hidden="true">↓</span></a>
                         <a class="text-link" href="<?= esc_url(d365_tour_booking_url()) ?>"><?php d365_label('日程を相談する', 'Request a date'); ?> <span aria-hidden="true">↗</span></a>
@@ -48,6 +50,9 @@ $tour_url = d365_experience_url('tour', $english);
                                 <img src="<?= esc_url(d365_asset($spot['photo'])) ?>" alt="" width="768" height="480" loading="lazy">
                             <?php endif; ?>
                             <div class="tour-spot-body">
+                                <?php if (isset($spot['photo_credit'])): ?>
+                                    <p class="tour-photo-credit"><?php d365_label('写真', 'Photo'); ?> <a href="<?= esc_url($spot['photo_credit']['source']) ?>"><?= esc_html($spot['photo_credit']['name']) ?></a> · <a href="<?= esc_url($spot['photo_credit']['license']) ?>">CC BY 2.0</a> · <?php d365_label('表示用にトリミング', 'Cropped for display'); ?></p>
+                                <?php endif; ?>
                                 <p class="tour-location"><?= esc_html(d365_text(...$spot['location'])) ?></p>
                                 <h3><?= esc_html(d365_text(...$spot['name'])) ?></h3>
                                 <p class="tour-tag"><?= esc_html(d365_text(...$spot['feature'])) ?></p>
@@ -64,10 +69,28 @@ $tour_url = d365_experience_url('tour', $english);
                 <p class="course-note"><?php d365_label('開催場所・日程は海況や経験に合わせてご案内します。生き物は季節やその日の海況によって変わります。', 'We’ll suggest sites and dates based on conditions and your experience. Wildlife varies with the season and the day.'); ?></p>
             </div>
         </section>
+        <?php if (isset($area['access'])): ?>
+            <section id="tour-access" class="section">
+                <div class="wrap">
+                    <div class="section-heading">
+                        <h2><?php d365_label('アクセス・地図', 'Getting there & map'); ?></h2>
+                        <p><?= esc_html(d365_text(...$area['access'])) ?></p>
+                    </div>
+                    <div class="tour-actions">
+                        <a class="button" href="<?= esc_url($area['map_url']) ?>"><?php d365_label('初島を地図で見る', 'Find Hatsushima on the map'); ?> <span aria-hidden="true">↗</span></a>
+                        <a class="text-link" href="<?= esc_url($area['access_url']) ?>"><?php d365_label('定期船の時刻・運航状況', 'Ferry timetable & service updates'); ?> <span aria-hidden="true">↗</span></a>
+                    </div>
+                </div>
+            </section>
+        <?php endif; ?>
         <section class="tour-next">
             <div class="wrap">
-                <h2><?= esc_html(d365_text(...$destinations[$area_id === 'izu' ? 'miura-zushi-hayama' : 'izu']['name'])) ?></h2>
-                <a class="text-link" href="<?= esc_url(d365_tour_area_url($area_id === 'izu' ? 'miura-zushi-hayama' : 'izu', $english)) ?>"><?php d365_label('こちらのエリアも見る', 'Explore this area too'); ?> <span aria-hidden="true">→</span></a>
+                <h2><?php d365_label('ほかのエリアを見る', 'Explore other areas'); ?></h2>
+                <div class="tour-actions">
+                    <?php foreach (array_diff_key($destinations, [$area_id => true]) as $slug => $region): ?>
+                        <a class="text-link" href="<?= esc_url(d365_tour_area_url($slug, $english)) ?>"><?= esc_html(d365_text(...$region['name'])) ?> <span aria-hidden="true">→</span></a>
+                    <?php endforeach; ?>
+                </div>
             </div>
         </section>
     <?php else: ?>
@@ -104,6 +127,11 @@ $tour_url = d365_experience_url('tour', $english);
                         <h3><?php d365_label('伊豆方面', 'Izu'); ?></h3>
                         <p class="course-price"><?php d365_label('¥36,000〜', 'From ¥36,000'); ?></p>
                         <p><?php d365_label('水着、器材、タオル、サンダルをご用意ください。', 'Bring swimwear, dive equipment, a towel and sandals.'); ?></p>
+                    </article>
+                    <article class="course-card">
+                        <h3><?php d365_label('初島', 'Hatsushima'); ?></h3>
+                        <p><?php d365_label('開催日程や料金はショップへお問い合わせください。', 'Ask the shop about available dates and prices.'); ?></p>
+                        <a class="text-link" href="<?= esc_url(d365_tour_booking_url('hatsushima')) ?>"><?php d365_label('初島のツアーを相談する', 'Ask about a Hatsushima trip'); ?> <span aria-hidden="true">↗</span></a>
                     </article>
                 </div>
                 <p class="course-note"><?php d365_label('海況によって日程や行き先が変わる場合があります。器材レンタルは別料金です。', 'Routes and dates may change depending on conditions. Rental equipment is charged separately.'); ?></p>

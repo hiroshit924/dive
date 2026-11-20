@@ -1,3 +1,39 @@
+const menuToggle = document.querySelector('.menu-toggle');
+const navigation = document.getElementById('site-navigation');
+
+if (menuToggle && navigation) {
+    const compactHeader = window.matchMedia('(max-width: 1150px)');
+
+    function setMenuOpen(open) {
+        menuToggle.setAttribute('aria-expanded', String(open));
+        navigation.hidden = compactHeader.matches && !open;
+    }
+
+    function updateHeader() {
+        if (compactHeader.matches && navigation.contains(document.activeElement)) {
+            menuToggle.hidden = false;
+            menuToggle.focus();
+        }
+        menuToggle.hidden = !compactHeader.matches;
+        setMenuOpen(false);
+    }
+
+    menuToggle.addEventListener('click', () => setMenuOpen(navigation.hidden));
+    navigation.addEventListener('click', (event) => {
+        if (compactHeader.matches && event.target.closest('a')) {
+            setMenuOpen(false);
+        }
+    });
+    menuToggle.closest('header').addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && menuToggle.getAttribute('aria-expanded') === 'true') {
+            setMenuOpen(false);
+            menuToggle.focus();
+        }
+    });
+    compactHeader.addEventListener('change', updateHeader);
+    updateHeader();
+}
+
 const hero = document.querySelector('.hero');
 const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
@@ -59,18 +95,29 @@ if (hero) {
 }
 
 const booking = document.querySelector('.d365-booking-form');
-const tourLocationGroup = booking?.querySelector('.booking-tour-location');
-if (tourLocationGroup) {
+if (booking) {
     const service = booking.elements.namedItem('service');
     const tourLocation = booking.elements.namedItem('tour_location');
-    function updateTourLocation() {
-        const isTour = service.value === 'tour';
-        tourLocationGroup.hidden = !isTour;
-        tourLocation.disabled = !isTour;
+    const people = booking.elements.namedItem('people');
+
+    function updateTopicFields() {
+        if (tourLocation) {
+            const isTour = service.value === 'tour';
+            tourLocation.closest('.booking-tour-location').hidden = !isTour;
+            tourLocation.disabled = !isTour;
+        }
+        const needsPeople = service.value !== 'other';
+        const peopleGroup = people?.closest('.booking-people');
+        if (peopleGroup) {
+            peopleGroup.hidden = !needsPeople;
+            people.disabled = !needsPeople;
+            people.required = needsPeople;
+        }
     }
-    service.addEventListener('change', updateTourLocation);
-    window.addEventListener('pageshow', updateTourLocation);
-    updateTourLocation();
+
+    service.addEventListener('change', updateTopicFields);
+    window.addEventListener('pageshow', updateTopicFields);
+    updateTopicFields();
 }
 
 if (booking?.dataset.submitError && window.fetch) {

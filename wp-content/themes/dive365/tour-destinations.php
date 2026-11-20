@@ -41,14 +41,14 @@ function d365_tour_destinations(): array {
                 ],
                 'hayama' => [
                     'name' => ['葉山', 'Hayama'], 'location' => ['神奈川県葉山町', 'Hayama, Kanagawa'],
-                    'feature' => ['ビーチ・季節の生き物', 'Shore diving & seasonal life'], 'photo' => 'tour-hayama.webp',
+                    'feature' => ['ビーチ・ボート', 'Shore & boat diving'], 'photo' => 'tour-hayama.webp',
                     'description' => [
-                        '浅瀬の岩場や海藻の間をゆっくり。小魚やウミウシを探しながら、季節ごとに表情が変わる海を楽しめます。',
-                        'Take your time over shallow rocky reefs and through patches of seaweed. Small fish and nudibranchs reward a closer look, with something different each season.',
+                        'ビーチでは浅瀬の岩場や海藻の間で、小魚やウミウシなど季節の生き物を探せます。ボートでは沖のポイントへ出て、岩礁や魚の群れを楽しめます。',
+                        'On a shore dive, look for small fish, nudibranchs and other seasonal life among shallow rocks and seaweed. On a boat dive, head offshore to explore reefs and look for schools of fish.',
                     ],
                     'highlights' => [
-                        '砂地と岩場の境目で足を止めると、海藻に隠れる生き物や、小さな魚がすっと出てくることがあります。浅い場所にも見どころが多く、一つの場所でじっくり観察したい日にぴったりです。うねりや風向きに合わせて、その日のポイントを決めます。',
-                        'Pause where sand meets rock and look for creatures hiding among the seaweed or small fish darting into view. There’s plenty to see in the shallows if you enjoy staying in one spot and looking closely. Swell and wind help determine the site for the day.',
+                        '浅い場所でじっくり観察したい方はビーチへ、沖の地形を広く眺めたい方はボートへ。ご希望とダイビング経験をお知らせください。風やうねりに合わせて、その日のポイントをご案内します。',
+                        'Choose a shore dive for a closer look at life in the shallows or a boat dive for a wider view of the offshore reefs. Tell us what you’d like to see and share your diving experience. We’ll suggest a site based on wind and swell.',
                     ],
                     'point' => [35.27500, 139.56565], 'offset' => [15, 14],
                 ],
@@ -154,6 +154,43 @@ function d365_tour_destinations(): array {
                         'The wreck of the Asahi Maru No. 16 was about 81 meters long. Its scale becomes clear as the outline comes into view. Fish around the wreck and soft corals on rocky sites offer very different sights. Ask which fits your certification, experience and depth range.',
                     ],
                     'point' => [35.09433, 139.07947],
+                ],
+            ],
+        ],
+        'hatsushima' => [
+            'name' => ['初島', 'Hatsushima'],
+            'headline' => ['船で渡る、初島の海。', 'Dive off the island of Hatsushima.'],
+            'description' => [
+                '熱海港から定期船で約30分。初島の岸から海に入り、岩礁と砂地を巡りながら、季節の魚や小さな生き物を探すファンダイブです。',
+                'Take a 30-minute ferry from Atami Port for a shore dive off Hatsushima. Explore rocky reefs and sandy seabeds for seasonal fish and smaller marine life.',
+            ],
+            'photo' => 'tour-hatsushima.webp',
+            'photo_caption' => ['沖から見た初島', 'Hatsushima from the water'],
+            'access' => [
+                '横浜の Diving Shop C365 に集合し、無料送迎で熱海港へ。熱海港から定期船に乗り、初島港へ渡ります。運航状況に応じた当日の流れは、ショップからご案内します。',
+                'Meet at Diving Shop C365 in Yokohama for the free shuttle to Atami Port, then take the ferry to Hatsushima. We’ll confirm the day’s plans based on the ferry schedule and service conditions.',
+            ],
+            'access_url' => 'https://www.hatsushima.jp/access/',
+            'map_url' => 'https://www.google.com/maps/search/?api=1&query=Hatsushima%2C%20Atami',
+            'spots' => [
+                'hatsushima' => [
+                    'name' => ['初島', 'Hatsushima'], 'location' => ['静岡県熱海市', 'Atami, Shizuoka'],
+                    'feature' => ['ビーチ・岩礁と砂地', 'Shore diving, reef & sand'],
+                    'photo' => 'tour-hatsushima-coast.webp',
+                    'photo_credit' => [
+                        'name' => 'John Carkeet',
+                        'source' => 'https://commons.wikimedia.org/wiki/File:Hatsushima_(19414146744).jpg',
+                        'license' => 'https://creativecommons.org/licenses/by/2.0/',
+                    ],
+                    'description' => [
+                        '代表的なビーチポイントのフタツネでは、岩場を行き来する魚の群れを眺めたり、岩のすき間や砂地にいる生き物を探したりできます。',
+                        'At Futatsune, one of the island’s main shore dive sites, watch schools of fish move over the rocks and look for smaller creatures in crevices and across the sand.',
+                    ],
+                    'highlights' => [
+                        '同じポイントでも、季節や潮で出会う生き物が変わります。魚の群れを広く眺めたい方も、水中写真を撮りながらゆっくり巡りたい方も、ご希望をお聞かせください。潜る場所や深さは、当日の海況と経験に合わせてご案内します。',
+                        'What you see varies with the season and the tide. Let us know if you’d like to look for schools of fish or take your time with underwater photography. We’ll choose the site and depth according to sea conditions and your experience.',
+                    ],
+                    'point' => [35.0403, 139.1695], 'offset' => [12, 0],
                 ],
             ],
         ],

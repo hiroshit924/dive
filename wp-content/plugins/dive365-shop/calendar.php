@@ -40,6 +40,8 @@ $requested_session = d365_input($_GET, 'dive_session');
 $chosen_session = d365_open_booking_session($requested_session);
 $preferred_service = $chosen_session ? (string) get_post_meta($chosen_session->ID, '_d365_service', true) : d365_input($_GET, 'dive_service');
 $show_tour_location = $preferred_service === 'tour';
+$show_people = $preferred_service !== 'other';
+$topics = $chosen_session ? d365_services() : d365_inquiry_topics();
 $days = $english ? ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] : ['月', '火', '水', '木', '金', '土', '日'];
 $days_with_sessions = [];
 $open_by_day = [];
@@ -200,7 +202,7 @@ if ($result === '' && $requested_session !== '' && !$chosen_session) {
 <section class="section booking" id="booking">
     <div class="wrap booking-grid">
         <div>
-            <h2><?= esc_html(d365_text('ダイビングを予約', 'Request a dive')) ?></h2>
+            <h2><?= esc_html(d365_text('予約・問い合わせ', 'Booking and inquiries')) ?></h2>
             <p><?= esc_html(d365_text('カレンダーの日程から参加を申し込むか、ご相談内容をお知らせください。スタッフが確認し、ご連絡します。', 'Request a spot from the calendar or tell us what you’d like to discuss. Our team will follow up to confirm your booking.')) ?></p>
             <p><a href="tel:+81452735496">045-273-5496</a></p>
         </div>
@@ -222,7 +224,7 @@ if ($result === '' && $requested_session !== '' && !$chosen_session) {
                     <label for="d365_service"><?= esc_html(d365_text('ご相談内容', 'Inquiry topic')) ?></label>
                     <select id="d365_service" name="service" <?= $chosen_session ? 'disabled' : 'required' ?>>
                         <option value=""><?= esc_html(d365_text('ご相談内容を選んでください', 'Select a topic')) ?></option>
-                        <?php foreach (d365_services() as $key => $label): ?>
+                        <?php foreach ($topics as $key => $label): ?>
                             <option value="<?= esc_attr($key) ?>" <?php selected($preferred_service, $key); ?>><?= esc_html($label) ?></option>
                         <?php endforeach; ?>
                     </select>
@@ -234,18 +236,20 @@ if ($result === '' && $requested_session !== '' && !$chosen_session) {
                     <input id="d365_guest_name" name="guest_name" maxlength="100" autocomplete="name" required>
                     <label for="d365_guest_email"><?= esc_html(d365_text('メールアドレス', 'Email address')) ?></label>
                     <input id="d365_guest_email" type="email" name="guest_email" maxlength="254" autocomplete="email" required>
-                    <label for="d365_people"><?= esc_html(d365_text('参加人数', 'Number of guests')) ?></label>
-                    <input id="d365_people" type="number" name="people" value="1" min="1" max="10" required>
+                    <div class="booking-people" <?= $show_people ? '' : 'hidden' ?>>
+                        <label for="d365_people"><?= esc_html(d365_text('参加人数', 'Number of guests')) ?></label>
+                        <input id="d365_people" type="number" name="people" value="1" min="1" max="10" <?= $show_people ? 'required' : 'disabled' ?>>
+                    </div>
                     <label for="d365_message"><?= esc_html(d365_text('連絡事項（任意）', 'Additional notes (optional)')) ?></label>
                     <textarea id="d365_message" name="message" rows="3" maxlength="1000" aria-describedby="d365_notes_help"><?= esc_textarea(apply_filters('d365_booking_notes_default', '')) ?></textarea>
                     <small id="d365_notes_help"><?= esc_html(d365_text('健康情報の記入はお控えください。', 'Please leave out any medical information.')) ?></small>
                     <label class="consent"><input type="checkbox" name="consent" value="1" required>
-                        <span><?= esc_html(d365_text('入力した情報を予約対応と連絡に使用することに同意します。', 'I agree that my details may be used to handle my request and contact me about it.')) ?>
+                        <span><?= esc_html(d365_text('入力した情報を予約・お問い合わせへの対応と連絡に使用することに同意します。', 'I agree that my details may be used to handle my request and contact me about it.')) ?>
                             <?php if (get_privacy_policy_url()): ?> <a href="<?= esc_url(get_privacy_policy_url()) ?>"><?= esc_html(d365_text('プライバシーポリシー', 'Privacy policy')) ?></a><?php endif; ?>
                         </span>
                     </label>
-                    <p class="form-notice <?= $result === 'received' ? 'success' : 'error' ?>" role="status" tabindex="-1"><?= esc_html(d365_booking_feedback($result, $english)) ?></p>
-                    <button class="button" type="submit"><?= esc_html(d365_text('予約リクエストを送信', 'Send booking request')) ?> <span aria-hidden="true">→</span></button>
+                    <p class="form-notice <?= $result === 'received' ? 'success' : 'error' ?>" role="status" tabindex="-1"><?= esc_html(d365_booking_feedback($result, $english, !$show_people)) ?></p>
+                    <button class="button" type="submit"><?= esc_html(d365_text('送信する', 'Send request')) ?> <span aria-hidden="true">→</span></button>
                 </form>
         </div>
     </div>

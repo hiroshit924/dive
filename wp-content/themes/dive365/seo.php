@@ -2,13 +2,13 @@
 defined('ABSPATH') || exit;
 
 add_action('wp', static function (): void {
-    if (is_front_page() || d365_is_michael() || d365_is_courses() || d365_experience()) {
+    if (is_front_page() || d365_is_privacy() || d365_is_michael() || d365_is_courses() || d365_experience()) {
         remove_action('wp_head', 'rel_canonical');
     }
 });
 
 add_action('wp_head', static function (): void {
-    if (!is_front_page() && !d365_is_michael() && !d365_is_courses() && !d365_experience()) {
+    if (!is_front_page() && !d365_is_privacy() && !d365_is_michael() && !d365_is_courses() && !d365_experience()) {
         return;
     }
 
@@ -23,7 +23,7 @@ add_action('wp_head', static function (): void {
     } elseif ($experience === 'overseas') {
         $description = d365_text('横浜のDiving Shop C365が不定期で開催する海外ダイビングツアー。パラオ、プーケット、サイパン、バリのダイビングポイントと開催相談をご案内します。', 'Explore dive sites in Palau, Phuket, Saipan and Bali. Diving Shop C365 runs occasional overseas dive trips and takes inquiries from Yokohama.');
     } elseif ($experience === 'tour') {
-        $description = d365_text('横浜のDiving Shop C365が案内する逗子・葉山・伊豆のファンダイブ。ツアー料金、器材レンタル、日程と予約をご案内します。', 'Join Diving Shop C365 in Yokohama for guided dives in Zushi, Hayama and Izu. See trip prices, rental options and booking information.');
+        $description = d365_text('横浜のDiving Shop C365が案内する逗子・葉山・伊豆・初島のファンダイブ。ツアー料金、器材レンタル、日程と予約をご案内します。', 'Join Diving Shop C365 in Yokohama for guided dives in Zushi, Hayama, Izu and Hatsushima. See trip prices, rental options and booking information.');
     }
     $area_id = d365_tour_area();
     $area = $area_id ? d365_tour_destinations()[$area_id] : null;
@@ -35,6 +35,9 @@ add_action('wp_head', static function (): void {
     }
     if ($course_id = d365_current_course()) {
         $description = d365_text(...d365_training_courses()[$course_id]['lead']);
+    }
+    if (d365_is_privacy()) {
+        $description = d365_text('Diving Shop C365の個人情報の取り扱い、利用目的、お問い合わせ窓口についてご案内します。', 'Learn how Diving Shop C365 handles personal information, how it is used and how to contact us.');
     }
     $url = d365_landing_url($english);
     $images = ['trial' => 'trial.jpg', 'tour' => 'tour.jpg', 'overseas' => 'overseas-palau.webp'];

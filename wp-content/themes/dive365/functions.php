@@ -161,7 +161,28 @@ function d365_michael_url(bool $english): string {
     return add_query_arg('d365_michael', '1', d365_home($english));
 }
 
+function d365_is_privacy(): bool {
+    return get_query_var('d365_privacy') === '1';
+}
+
+function d365_privacy_url(bool $english): string {
+    if (get_option('permalink_structure')) {
+        return home_url($english ? '/en/privacy/' : '/privacy/');
+    }
+    return d365_home($english, ['d365_privacy' => '1']);
+}
+
+add_filter('privacy_policy_url', static function (string $url): string {
+    if ($url === '' && !is_admin() && function_exists('d365_show_booking')) {
+        return d365_privacy_url(d365_is_english());
+    }
+    return $url;
+});
+
 function d365_landing_url(bool $english): string {
+    if (d365_is_privacy()) {
+        return d365_privacy_url($english);
+    }
     if (d365_is_michael()) {
         return d365_michael_url($english);
     }
@@ -177,6 +198,9 @@ function d365_landing_url(bool $english): string {
 }
 
 add_filter('template_include', static function (string $template): string {
+    if (d365_is_privacy()) {
+        return get_theme_file_path('privacy.php');
+    }
     if (d365_is_michael()) {
         return get_theme_file_path('michael.php');
     }
@@ -214,6 +238,9 @@ add_filter('language_attributes', static function (string $attributes): string {
     return d365_is_english() ? 'lang="en"' : 'lang="ja"';
 });
 add_filter('pre_get_document_title', static function (string $title): string {
+    if (d365_is_privacy()) {
+        return d365_text('プライバシーポリシー｜Diving Shop C365', 'Privacy Policy | Diving Shop C365');
+    }
     if (d365_is_michael()) {
         return d365_text('マイケル君の紹介｜Diving Shop C365', 'Meet Michael | Diving Shop C365');
     }
@@ -230,7 +257,7 @@ add_filter('pre_get_document_title', static function (string $title): string {
     $titles = [
         'trial' => d365_text('横浜から体験ダイビング｜Diving Shop C365', 'Discover Scuba Diving from Yokohama | Diving Shop C365'),
         'overseas' => d365_text('海外ダイビングツアー｜パラオ・プーケット・サイパン・バリ｜Diving Shop C365', 'Overseas Dive Trips to Palau, Phuket, Saipan & Bali | Diving Shop C365'),
-        'tour' => d365_text('三浦・逗子・葉山・伊豆のダイビングツアー｜Diving Shop C365', 'Miura, Zushi, Hayama & Izu Dive Trips | Diving Shop C365'),
+        'tour' => d365_text('三浦・逗子・葉山・伊豆・初島のダイビングツアー｜Diving Shop C365', 'Miura, Zushi, Hayama, Izu & Hatsushima Dive Trips | Diving Shop C365'),
     ];
     if (isset($titles[d365_experience()])) {
         return $titles[d365_experience()];
@@ -238,7 +265,7 @@ add_filter('pre_get_document_title', static function (string $title): string {
     return is_front_page() ? d365_text('Diving Shop C365｜横浜のダイビングショップ', 'Diving Shop C365 | Dive Shop in Yokohama') : $title;
 });
 add_action('wp_head', static function (): void {
-    if ((is_front_page() || d365_is_michael() || d365_is_courses() || d365_experience()) && function_exists('d365_show_booking')) {
+    if ((is_front_page() || d365_is_privacy() || d365_is_michael() || d365_is_courses() || d365_experience()) && function_exists('d365_show_booking')) {
         foreach (['ja' => d365_landing_url(false), 'en' => d365_landing_url(true), 'x-default' => d365_landing_url(false)] as $lang => $url) {
             printf('<link rel="alternate" hreflang="%s" href="%s">' . "\n", esc_attr($lang), esc_url($url));
         }

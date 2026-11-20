@@ -12,6 +12,7 @@
         </div>
         <small>© <?= esc_html(wp_date('Y')) ?> Diving Shop C365</small>
     </div>
+    <?php get_template_part('template-parts/booking-link', null, ['class' => 'floating-book']); ?>
 </footer>
 <?php wp_footer(); ?>
 </body>

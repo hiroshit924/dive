@@ -1,5 +1,6 @@
 <?php
 get_header();
+$english = d365_is_english();
 $destinations = d365_overseas_destinations();
 ?>
 <main id="main" class="tour-page overseas-page">
@@ -10,6 +11,7 @@ $destinations = d365_overseas_destinations();
                 <p class="tour-kicker"><?php d365_label('海外ダイビングツアー・不定期開催', 'Overseas dive trips · occasional departures'); ?></p>
                 <h1><?php d365_label('次は、海を越えて。', 'Let’s go a little farther.'); ?></h1>
                 <p class="tour-intro"><?php d365_label('パラオの外洋、プーケットの島々。いつもの仲間と、まだ潜ったことのない海へ。Diving Shop C365の海外ツアーは不定期で開催しています。', 'From Palau’s open ocean to the islands off Phuket, discover a new dive with familiar faces. Diving Shop C365 runs overseas trips from time to time.'); ?></p>
+                <?php get_template_part('template-parts/tour-pickup'); ?>
                 <div class="tour-actions">
                     <a class="button" href="#overseas-destinations"><?php d365_label('行き先を見る', 'Explore destinations'); ?> <span aria-hidden="true">↓</span></a>
                     <a class="text-link" href="<?= esc_url(d365_tour_booking_url('overseas')) ?>"><?php d365_label('海外ツアーを相談する', 'Ask about a trip'); ?> <span aria-hidden="true">↗</span></a>

@@ -33,7 +33,7 @@ $pin = 0;
                         <?php endforeach; ?>
                     <?php endforeach; ?>
                 </div>
-                <figcaption><a href="https://maps.gsi.go.jp/development/ichiran.html"><?php d365_label('地理院タイルをもとに作成', 'Illustrated from GSI map tiles'); ?></a></figcaption>
+                <figcaption><a href="https://maps.gsi.go.jp/development/ichiran.html"><?php d365_label('国土地理院（加工）', 'GSI Japan (modified)'); ?></a></figcaption>
             </figure>
             <div class="tour-map-index">
                 <?php $number = 0; foreach ($destinations as $region => $group): ?>

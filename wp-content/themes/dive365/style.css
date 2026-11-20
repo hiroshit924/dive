@@ -1,7 +1,7 @@
 /*
 Theme Name: Diving Shop C365
 Description: Bilingual diving shop theme for Diving Shop C365, Yokohama.
-Version: 1.7.0
+Version: 1.8.0
 Requires PHP: 8.1
 Text Domain: dive365
 */
@@ -38,7 +38,7 @@ ul{padding-inline-start:1.4em}
 .site-header nav,.header-actions{display:flex;align-items:center;gap:clamp(.65rem,1.3vw,1.5rem)}
 .site-header nav a,.language,.wordmark,.button,.text-link{text-decoration:none}
 .site-header nav a,.language{font-size:.84rem;font-weight:750;white-space:nowrap}
-.site-header nav a:hover,.language:hover,.site-footer a:hover{color:var(--sea)}
+.site-header nav a:not(.booking-link):hover,.language:hover,.footer-wrap a:hover{color:var(--sea)}
 .wordmark{display:inline-flex;align-items:center;gap:.65rem;font-size:clamp(1rem,1.6vw,1.25rem);font-weight:800;line-height:1.12;letter-spacing:-.045em;white-space:nowrap;color:var(--ink)}
 .wordmark img{width:2rem;height:2.6rem;object-fit:contain}
 .wordmark strong{font-weight:900;color:var(--sea)}
@@ -47,6 +47,15 @@ ul{padding-inline-start:1.4em}
 .button:hover{background:#a7ddfc}
 .button.outline{border-color:#a8ccde;background:#fff;color:var(--ink)}
 .button.outline:hover{background:#edf8ff;color:var(--navy)}
+.booking-link{gap:.5rem;background:#ffbb50;color:#382308;white-space:nowrap}
+.booking-link:hover{background:#ffa633}
+.booking-icon{position:relative;flex:none;width:1.15em;height:1em;border:1.5px solid currentColor;border-radius:.2em}
+.booking-icon::before{content:"";position:absolute;inset:.24em 0 auto;border-top:1.5px solid currentColor}
+.booking-icon::after{content:"";position:absolute;top:-.25em;left:.19em;width:.12em;height:.34em;border-radius:.1em;background:currentColor;box-shadow:.5em 0 currentColor}
+.menu-toggle{display:none}
+.site-header nav .menu-book{display:none}
+.floating-book{position:fixed;z-index:5;right:max(1rem,env(safe-area-inset-right));bottom:calc(1rem + env(safe-area-inset-bottom));border-color:#fff;box-shadow:0 4px 18px #38230844}
+.site-footer:has(.floating-book){padding-bottom:calc(5.5rem + env(safe-area-inset-bottom))}
 .hero{position:relative;overflow:hidden;background:radial-gradient(ellipse at 78% 35%,#d0edff 0,transparent 47%),linear-gradient(130deg,#fff 0%,#f0faff 58%,#e4f5ff 100%)}
 .hero-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.06fr);align-items:center;gap:clamp(1rem,4.2vw,4.35rem);padding-block:clamp(3.5rem,7vw,6.3rem)}
 .hero-content{position:relative;z-index:1}
@@ -154,12 +163,13 @@ details p{padding-top:.65rem}
 .access-map iframe{display:block;width:100%;height:clamp(13rem,21vw,16.5rem);border:1px solid var(--line);border-radius:var(--radius);background:var(--mist)}
 .access-map .text-link{margin-top:.55rem}
 .site-footer{background:#e8f5ff;color:var(--ink);padding-block:2rem}
-.site-footer a{margin-right:1rem}
+.footer-wrap a{margin-right:1rem}
 .footer-brand img{width:3.05rem;height:3.25rem}
 .reading{max-width:66rem}
 .reading h1{font-size:clamp(2rem,5vw,4rem)}
 .reading article{margin-block:1.4rem 2.7rem}
 .reading article p{margin-block:.8rem;color:var(--muted)}
+.reading article h2{font-size:clamp(1.4rem,3vw,2rem);letter-spacing:-.025em;margin-top:1.6rem}
 .reading iframe,.reading video,.course-page video{max-width:100%}
 .screen-reader-text{position:absolute!important;clip-path:inset(50%);height:1px;width:1px;overflow:hidden;white-space:nowrap}
 .screen-reader-text:focus{clip-path:none;top:1rem;left:1rem;height:auto;width:auto;padding:.6rem 1rem;background:white;color:var(--ink);z-index:9}
@@ -170,10 +180,19 @@ details p{padding-top:.65rem}
   @keyframes hero-arrive{from{opacity:0;transform:translateY(1.1rem)}to{opacity:1;transform:none}}
 }
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.hero-video{transition:none}}
-@media(max-width:1050px){
-  .header-wrap{flex-wrap:wrap;gap:.55rem;min-height:auto;padding-block:.8rem}
-  .site-header nav{order:3;width:100%;overflow-x:auto;padding-top:.4rem;gap:1.1rem}
-  .header-actions{gap:.6rem}
+@media(max-width:1150px){
+  .header-wrap{flex-wrap:wrap;justify-content:flex-start;gap:.65rem;min-height:auto;padding-block:.65rem}
+  .header-actions{margin-inline-start:auto}
+  .menu-toggle:not([hidden])~.header-actions{margin-inline-start:0}
+  .menu-toggle{display:grid;place-items:center;margin-inline-start:auto;width:2.75rem;height:2.75rem;border:1px solid var(--line);border-radius:.65rem;background:var(--mist);color:var(--ink)}
+  .menu-icon{display:block;width:1.1rem;height:2px;background:currentColor;box-shadow:0 -.34rem currentColor,0 .34rem currentColor}
+  .menu-toggle[aria-expanded="true"] .menu-icon{background:transparent;box-shadow:none;position:relative}
+  .menu-toggle[aria-expanded="true"] .menu-icon::before,.menu-toggle[aria-expanded="true"] .menu-icon::after{content:"";position:absolute;inset:0;background:currentColor;transform:rotate(45deg)}
+  .menu-toggle[aria-expanded="true"] .menu-icon::after{transform:rotate(-45deg)}
+  .site-header nav{order:3;flex-direction:column;align-items:stretch;flex-basis:100%;gap:0;border-top:1px solid var(--line)}
+  .site-header nav a{padding:.65rem .35rem;font-size:.9rem}
+  .site-header nav .menu-book{display:inline-flex;align-self:flex-start;margin-top:.3rem;padding-inline:1rem}
+  .header-book{display:none}
 }
 @media(max-width:820px){
   .section-heading,.schedule-grid,.booking-grid{grid-template-columns:1fr}
@@ -187,7 +206,6 @@ details p{padding-top:.65rem}
   .hero h1{font-size:clamp(2.55rem,11.25vw,4.2rem)}
   .hero-media{aspect-ratio:1.2}
   .hero-art{padding-left:2%}
-  .header-book{min-height:2.5rem;padding:.5rem .7rem;font-size:.76rem;gap:.35rem}
   .calendar :is(th,td){height:2.4rem}
   .calendar td a,.calendar td [aria-current]{width:2rem;height:2rem}
   .footer-wrap{flex-wrap:wrap}
@@ -204,10 +222,6 @@ details p{padding-top:.65rem}
 .course-note{margin-top:1rem}
 @media(max-width:640px){.course-grid{grid-template-columns:1fr}}
 .staff-card .staff-role{color:var(--sea);font-weight:800;margin-top:.35rem}
-@media(max-width:595px){
-  .site-header nav{flex-wrap:wrap;column-gap:.75rem;row-gap:.35rem}
-  .site-header nav a{font-size:.76rem}
-}
 .course-page h2+.course-card{margin-top:1.2rem}
 
 /* Dive trips */
@@ -216,6 +230,10 @@ details p{padding-top:.65rem}
 .tour-kicker{color:var(--sea);font-weight:800;margin-bottom:1rem;font-size:.9rem}
 .tour-banner h1{font-size:clamp(2.6rem,6vw,5.8rem);font-weight:900;line-height:1.12;letter-spacing:-.077em;text-wrap:balance}
 .tour-intro{color:var(--muted);max-width:37rem;margin-top:1.3rem}
+.tour-pickup{display:flex;align-items:center;gap:.85rem;margin-top:1.3rem;padding:.85rem 1rem;border:1px solid #aad5ec;border-radius:.85rem;background:white;max-width:35rem}
+.tour-pickup-icon{font-size:1.65rem;line-height:1}
+.tour-pickup-copy{font-size:.9rem}
+.tour-pickup strong{display:block;color:var(--navy);font-size:1.1rem}
 .tour-actions{display:flex;align-items:center;flex-wrap:wrap;gap:.7rem 1.35rem;margin-top:1.5rem}
 .tour-actions .text-link,.tour-back{margin-top:0}
 .tour-back{margin-bottom:1.3rem}
@@ -223,8 +241,11 @@ details p{padding-top:.65rem}
 .tour-banner-photo img{width:100%;aspect-ratio:1.24;object-fit:cover;border-radius:45% 45% 1.5rem 1.5rem;box-shadow:var(--shadow)}
 .tour-banner-photo figcaption{position:absolute;bottom:1rem;right:1rem;border-radius:100px;padding:.28rem .8rem;background:#092c31d9;color:white;font-size:.8rem;font-weight:700}
 .tour-region-grid,.tour-spot-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(1rem,2vw,1.75rem);margin-top:1.6rem}
+.tour-region-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,17rem),1fr))}
 .tour-region-card,.tour-spot{display:block;overflow:hidden;border:1px solid var(--line);background:white;border-radius:1.2rem;box-shadow:var(--shadow);text-decoration:none}
 .tour-region-card>img,.tour-spot>img{width:100%;object-fit:cover;aspect-ratio:2}
+.tour-spot:only-child{display:grid;grid-column:1/-1;grid-template-columns:repeat(2,minmax(0,1fr))}
+.tour-spot:only-child>img{height:100%;aspect-ratio:3/2}
 .tour-region-card>div,.tour-spot-body{padding:clamp(1.1rem,3vw,2rem)}
 .tour-region-card h3,.tour-spot h3{font-size:clamp(1.45rem,3vw,2rem)}
 .tour-region-card p,.tour-spot-body>p:not(.tour-tag){margin-top:.55rem;color:var(--muted)}
@@ -254,6 +275,7 @@ details p{padding-top:.65rem}
 .tour-spot{scroll-margin-top:1.3rem}
 .tour-spot:target{border-color:#07816c;box-shadow:0 0 0 2px #07816c}
 .tour-spot-body>p.tour-location{font-size:.8rem;margin:0 0 .2rem}
+.tour-spot-body>p.tour-photo-credit{font-size:.75rem;margin:0 0 .75rem}
 .tour-tag{display:inline-block;border-radius:100px;background:#e3f6ef;color:#126358;font-weight:750;font-size:.8rem;margin:.7rem 0 .15rem;padding:.28rem .65rem}
 .tour-next{background:var(--mist);padding-block:2.2rem}
 .tour-next h2{font-size:clamp(1.65rem,3.4vw,2.7rem)}
@@ -262,6 +284,7 @@ details p{padding-top:.65rem}
 .tour-cta h2{font-size:clamp(1.8rem,4vw,3.2rem)}
 .tour-cta p{margin-top:.7rem;color:#deefea}
 @media(max-width:850px){.tour-banner-inner,.tour-map-grid{grid-template-columns:1fr}.tour-banner-photo img{aspect-ratio:1.6}}
+@media(max-width:680px){.tour-spot:only-child{grid-template-columns:1fr}.tour-spot:only-child>img{height:auto}}
 @media(max-width:595px){.tour-region-grid,.tour-spot-grid{grid-template-columns:1fr}.tour-pin{width:1.7rem;height:1.7rem;font-size:.7rem}}
 
 .overseas-banner{background:var(--mist)}
@@ -417,7 +440,7 @@ details p{padding-top:.65rem}
 @media(max-width:740px){.training-guide-layout.has-course-photo{grid-template-columns:1fr}.training-field-photo{max-width:26rem}.training-contents ul{gap:.15rem .95rem}}
 
 .booking-session{margin-bottom:.8rem;color:var(--navy);font-size:.92rem;font-weight:750}
-.booking-tour-location{margin-top:.8rem}
+.booking-tour-location,.booking-people{margin-top:.8rem}
 @media(min-width:741px){.training-field-photo{position:sticky;top:1.5rem}}
 
 .booking form .form-notice{margin-top:.8rem}

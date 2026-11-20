@@ -53,10 +53,11 @@ docker compose exec -T --user www-data wordpress php /tmp/wp-cli.phar --path=/va
 
 - 体験ダイビングはマイケル君が写真で当日の流れを紹介します。ページ構成はうみくじらの体験案内とマレアの初心者向け案内を参照しました。
 - ファンダイブ向け器材レンタルのメニュー、税込価格、イラストは `template-parts/rental-gear.php` と `assets/rental-gear/` で管理します。価格は依頼時に指定されたうみくじらの料金表を参照しています。体験ダイビングの必要器材は体験料金に含まれます。
-- 体験・国内ツアーのキャンセル案内は `template-parts/cancellation-policy.php` で管理します。C365のキャンセル料・適用期限・返金条件は、店舗で確定した内容をご案内します。
+- 体験・国内ツアーのキャンセル料と適用期限は `template-parts/cancellation-policy.php` で管理します。
 
-- 既存のツアーURLから、三浦・逗子・葉山と伊豆の日英サブページへ進めます。スポット名、特徴、写真、地図上の位置はテーマの `tour-destinations.php` で管理します。
+- 既存のツアーURLから、三浦・逗子・葉山、伊豆、初島の日英サブページへ進めます。スポット名、特徴、写真、地図上の位置はテーマの `tour-destinations.php` で管理します。
 - 地図は国土地理院の淡色地図をもとに海岸線を簡略化したものです。ピンはエリアの目安を示します。各スポットの相談リンクから、予約フォームに希望エリアを引き継ぎます。
+- 初島の写真は Wikimedia Commons の [Batholith による島の遠景（パブリックドメイン）](https://commons.wikimedia.org/wiki/File:Hatsushima_20120802.jpg) と [John Carkeet による海岸写真（CC BY 2.0）](https://commons.wikimedia.org/wiki/File:Hatsushima_(19414146744).jpg) を WebP に変換して使用しています。
 
 ### 海外ツアー
 

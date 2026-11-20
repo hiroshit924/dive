@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Dive 365 Shop
  * Description: Bilingual calendar, booking requests and emails, and legacy post type support.
- * Version: 1.8.0
+ * Version: 1.9.0
  * Requires PHP: 8.1
  */
 
@@ -29,13 +29,15 @@ function d365_home(bool $english, array $args = []): string {
 }
 
 function d365_register(): void {
+    add_rewrite_rule('^en/privacy/?$', 'index.php?d365_lang=en&d365_privacy=1', 'top');
+    add_rewrite_rule('^privacy/?$', 'index.php?d365_privacy=1', 'top');
     add_rewrite_rule('^en/michael/?$', 'index.php?d365_lang=en&d365_michael=1', 'top');
     add_rewrite_rule('^michael/?$', 'index.php?d365_michael=1', 'top');
     add_rewrite_rule('^en/discover-scuba/?$', 'index.php?d365_lang=en&d365_experience=trial', 'top');
     add_rewrite_rule('^en/dive-trips/overseas/?$', 'index.php?d365_lang=en&d365_experience=overseas', 'top');
     add_rewrite_rule('^dive-trips/overseas/?$', 'index.php?d365_experience=overseas', 'top');
-    add_rewrite_rule('^en/dive-trips/(miura-zushi-hayama|izu)/?$', 'index.php?d365_lang=en&d365_experience=tour&d365_tour_area=$matches[1]', 'top');
-    add_rewrite_rule('^dive-trips/(miura-zushi-hayama|izu)/?$', 'index.php?d365_experience=tour&d365_tour_area=$matches[1]', 'top');
+    add_rewrite_rule('^en/dive-trips/(miura-zushi-hayama|izu|hatsushima)/?$', 'index.php?d365_lang=en&d365_experience=tour&d365_tour_area=$matches[1]', 'top');
+    add_rewrite_rule('^dive-trips/(miura-zushi-hayama|izu|hatsushima)/?$', 'index.php?d365_experience=tour&d365_tour_area=$matches[1]', 'top');
     add_rewrite_rule('^en/dive-trips/?$', 'index.php?d365_lang=en&d365_experience=tour', 'top');
     $courses = '(open-water|advanced|specialties|efr|rescue|divemaster)';
     add_rewrite_rule('^en/courses/' . $courses . '/?$', 'index.php?d365_lang=en&d365_courses=1&d365_course=$matches[1]', 'top');
@@ -80,16 +82,16 @@ function d365_register(): void {
 }
 add_action('init', 'd365_register', 20);
 function d365_refresh_rewrite_rules(): void {
-    if (get_option('d365_rewrite_version') !== '5') {
+    if (get_option('d365_rewrite_version') !== '7') {
         flush_rewrite_rules(false);
-        update_option('d365_rewrite_version', '5');
+        update_option('d365_rewrite_version', '7');
     }
 }
 add_action('wp_loaded', 'd365_refresh_rewrite_rules');
 register_activation_hook(__FILE__, static function (): void {
     d365_register();
     flush_rewrite_rules(false);
-    update_option('d365_rewrite_version', '5');
+    update_option('d365_rewrite_version', '7');
 });
 add_filter('query_vars', static function (array $vars): array {
     $vars[] = 'd365_lang';
@@ -98,6 +100,7 @@ add_filter('query_vars', static function (array $vars): array {
     $vars[] = 'd365_experience';
     $vars[] = 'd365_tour_area';
     $vars[] = 'd365_michael';
+    $vars[] = 'd365_privacy';
     return $vars;
 });
 add_filter('request', static function (array $vars): array {
@@ -107,7 +110,7 @@ add_filter('request', static function (array $vars): array {
     return $vars;
 });
 add_filter('redirect_canonical', static function ($redirect) {
-    return ((d365_is_english() && is_front_page()) || get_query_var('d365_courses') === '1' || get_query_var('d365_michael') === '1' || in_array(get_query_var('d365_experience'), ['trial', 'tour', 'overseas'], true)) ? false : $redirect;
+    return ((d365_is_english() && is_front_page()) || get_query_var('d365_courses') === '1' || get_query_var('d365_michael') === '1' || get_query_var('d365_privacy') === '1' || in_array(get_query_var('d365_experience'), ['trial', 'tour', 'overseas'], true)) ? false : $redirect;
 });
 
 add_action('template_redirect', static function (): void {
@@ -133,6 +136,11 @@ function d365_services(?bool $english = null): array {
     return ($english ?? d365_is_english())
         ? ['trial' => 'Discover Scuba Diving', 'course' => 'Scuba Certification', 'tour' => 'Fun Dive Trips']
         : ['trial' => '体験ダイビング', 'course' => 'ライセンス講習', 'tour' => 'ファンダイブツアー'];
+}
+
+function d365_inquiry_topics(?bool $english = null): array {
+    $english ??= d365_is_english();
+    return d365_services($english) + ['other' => $english ? 'Other inquiries' : 'その他のご相談'];
 }
 
 function d365_statuses(): array {
@@ -294,10 +302,10 @@ function d365_booking_box(WP_Post $post): void {
     <dl>
         <?php foreach ($labels as $key => $label):
             $value = $key === 'session_date' ? d365_booking_period($post->ID) : (string) get_post_meta($post->ID, '_d365_' . $key, true);
-            if ($key === 'tour_location' && $value === '') { continue; }
+            if (($key === 'tour_location' || $key === 'people') && $value === '') { continue; }
             ?>
             <dt><strong><?= esc_html($label) ?></strong></dt>
-            <dd><?= nl2br(esc_html($key === 'service' ? (d365_services()[$value] ?? $value) : $value)) ?></dd>
+            <dd><?= nl2br(esc_html($key === 'service' ? (d365_inquiry_topics(false)[$value] ?? $value) : $value)) ?></dd>
         <?php endforeach; ?>
     </dl>
     <p><label for="d365_status">対応状況</label><br><select id="d365_status" name="d365_status">
@@ -357,7 +365,10 @@ add_action('manage_d365_session_posts_custom_column', static function (string $c
 
 add_action('admin_post_nopriv_d365_book', 'd365_submit_booking');
 add_action('admin_post_d365_book', 'd365_submit_booking');
-function d365_booking_feedback(string $result, bool $english): string {
+function d365_booking_feedback(string $result, bool $english, bool $other = false): string {
+    if ($result === 'received' && $other) {
+        return $english ? 'We received your inquiry. Our team will be in touch.' : 'お問い合わせを受け付けました。スタッフからのご連絡をお待ちください。';
+    }
     $messages = [
         'received' => ['予約リクエストを受け付けました。スタッフからのご連絡をお待ちください。', 'We received your request. Our team will contact you to confirm availability.'],
         'invalid' => ['入力内容を確認して、もう一度お試しください。', 'Please check your details and try again.'],
@@ -370,10 +381,15 @@ function d365_booking_feedback(string $result, bool $english): string {
 function d365_submit_booking(): void {
     $english = d365_input($_POST, 'language') === 'en';
     $result = d365_record_booking($_POST, $english);
+    $other = d365_input($_POST, 'session') === '' && d365_input($_POST, 'service') === 'other';
     if (d365_input($_POST, 'd365_response') === 'json') {
-        wp_send_json(['result' => $result, 'message' => d365_booking_feedback($result, $english)]);
+        wp_send_json(['result' => $result, 'message' => d365_booking_feedback($result, $english, $other)]);
     }
-    wp_safe_redirect(d365_home($english, ['booking' => $result]) . '#booking', 303);
+    $args = ['booking' => $result];
+    if ($other) {
+        $args['dive_service'] = 'other';
+    }
+    wp_safe_redirect(d365_home($english, $args) . '#booking', 303);
     exit;
 }
 
@@ -399,24 +415,26 @@ function d365_record_booking(array $input, bool $english): string {
         $date = $start->format('Y-m-d');
         $end_date = $end->format('Y-m-d');
     }
-    if (!isset(d365_services()[$service]) || ($date !== '' && (!d365_date($date) || $date < d365_now()->format('Y-m-d')))) {
+    $topics = $event ? d365_services($english) : d365_inquiry_topics($english);
+    if (!isset($topics[$service]) || ($date !== '' && (!d365_date($date) || $date < d365_now()->format('Y-m-d')))) {
         return 'invalid';
     }
 
     $name = sanitize_text_field(d365_input($input, 'guest_name'));
     $raw_email = trim(d365_input($input, 'guest_email'));
     $email = sanitize_email($raw_email);
-    $people = filter_var(d365_input($input, 'people'), FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 10]]);
+    $other = $service === 'other';
+    $people = $other ? '' : filter_var(d365_input($input, 'people'), FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 10]]);
     $message = sanitize_textarea_field(d365_input($input, 'message'));
     $tour_location = $service === 'tour' ? sanitize_text_field(d365_input($input, 'tour_location')) : '';
     if ($name === '' || strlen($name) > 400 || !is_email($email) || $email !== $raw_email || strlen($email) > 254
-        || !$people || strlen($message) > 4000 || strlen($tour_location) > 400 || d365_input($input, 'consent') !== '1') {
+        || (!$other && !$people) || strlen($message) > 4000 || strlen($tour_location) > 400 || d365_input($input, 'consent') !== '1') {
         return 'invalid';
     }
 
     $event_en = $event ? (string) get_post_meta($event->ID, '_d365_en', true) : '';
     $booking = wp_insert_post([
-        'post_type' => 'd365_booking', 'post_status' => 'private', 'post_title' => '予約申請 ' . wp_generate_uuid4(),
+        'post_type' => 'd365_booking', 'post_status' => 'private', 'post_title' => ($other ? 'お問い合わせ ' : '予約申請 ') . wp_generate_uuid4(),
         'meta_input' => [
             '_d365_name' => $name, '_d365_email' => $email, '_d365_people' => $people,
             '_d365_message' => $message, '_d365_language' => $english ? 'English' : '日本語',

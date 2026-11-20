@@ -109,6 +109,14 @@
 .trial-faq details:first-child { border-top: 1px solid var(--line); }
 .trial-faq details p { margin-top: .6rem; color: var(--muted); }
 .dive-cancellation { background: #f4faff; padding-block: clamp(2.7rem, 6vw, 5rem); }
+.dive-policy-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.dive-policy-fees { grid-column: 1 / -1; }
+.dive-policy-fees table { width: 100%; max-width: 48rem; margin-top: 1rem; border-collapse: collapse; font-size: .95rem; }
+.dive-policy-fees :is(th, td) { padding: .55rem clamp(.45rem, 2vw, 1rem); border-bottom: 1px solid var(--line); text-align: start; }
+.dive-policy-fees thead { background: #eef8ff; color: var(--navy); }
+.dive-policy-fees :is(th, td):last-child { text-align: end; white-space: nowrap; }
+.dive-policy-fees tbody td { font-weight: 800; font-variant-numeric: tabular-nums; }
+.dive-policy-fees p { max-width: 48rem; }
 .dive-policy-contact { display: flex; flex-wrap: wrap; gap: .2rem .8rem; margin-top: .85rem; color: var(--sea); font-weight: 700; overflow-wrap: anywhere; }
 .trial-final { padding-block: clamp(2rem, 5vw, 4rem); background: #dff4ff; }
 .trial-final .wrap { display: grid; align-items: center; grid-template-columns: minmax(5.7rem, .22fr) minmax(0, .78fr); gap: clamp(.75rem, 4vw, 3.5rem); max-width: 62rem; }
