@@ -124,15 +124,14 @@ $tour_url = d365_experience_url('tour', $english);
                 <div class="course-grid">
                     <?php foreach ($trip_prices as $trip_id => [$name, $amount]):
                         $price = '¥' . number_format($amount);
+                        $destination = $destinations[$trip_id]['booking_destination'] ?? $trip_id;
                         ?>
                         <article class="course-card">
                             <h3><?= esc_html(d365_text(...$name)) ?></h3>
                             <p class="course-price"><?= esc_html(d365_text($price . '〜', 'From ' . $price)) ?></p>
                             <p><strong><?php d365_label('含まれる料金：', 'Included:'); ?></strong> <?php d365_label('ガイド、施設利用料、タンク利用料、保険料', 'Guide, facility fees, tank rental and insurance.'); ?></p>
                             <p><strong><?php d365_label('持ちもの：', 'What to bring:'); ?></strong> <?php d365_label('水着、タオル、サンダル、ご自身のダイビング器材（レンタルの場合は不要）。冬季の持ちものは別途ご案内します。', 'Swimwear, a towel, sandals and your own dive gear if you are not renting. We’ll provide separate guidance on what to bring in winter.'); ?></p>
-                            <?php if ($trip_id === 'hatsushima'): ?>
-                                <a class="text-link" href="<?= esc_url(d365_tour_booking_url($destinations['hatsushima']['booking_destination'])) ?>"><?php d365_label('初島・熱海のツアーを相談する', 'Ask about Hatsushima or Atami'); ?> <span aria-hidden="true">↗</span></a>
-                            <?php endif; ?>
+                            <a class="text-link" href="<?= esc_url(d365_tour_booking_url($destination)) ?>"><?= esc_html(d365_text($name[0] . 'のツアーを相談する', 'Ask about ' . $name[1])) ?> <span aria-hidden="true">↗</span></a>
                         </article>
                     <?php endforeach; ?>
                 </div>
